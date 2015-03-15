@@ -30,6 +30,8 @@ function Player(sid, pid, xPos, yPos, Type){
         return "not support type";
 	}
   }
+  
+  this.getShape = function() { return Shape; }
 }
 
 // For node.js require
