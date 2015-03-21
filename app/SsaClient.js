@@ -96,7 +96,7 @@ function SsaClient() {
   var onMouseClick = function(e) {
     //Shoot weapon
     
-    
+    myShape.shoot();
     //Send event to server
     //sendToServer({type:"shoot"});
   }
@@ -168,6 +168,8 @@ function SsaClient() {
     }
     
     render();
+
+
   }
   
   var render = function() {
@@ -188,8 +190,22 @@ function SsaClient() {
     
     //Draw myself later so I'll be on top
     renderShape(myShape, "#ff0000"); //Color decided by server
-    
+
+//Bullet Management and Rendering
+var playerBullets = myShape.getBulletList();
+
+    playerBullets.forEach(function(bullet) {
+
+      if(bullet.isActive())
+      {
+    bullet.update();
+    bullet.draw();
+
+    }
+    })
   }
+
+
   
   //Expects a shape object and a string
   var renderShape = function(shape, colorCode) {
