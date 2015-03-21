@@ -18,6 +18,12 @@ var ShapeConstants = {
   TRIANGLE_LENGTH : 10
 }
 
+var BulletConstants = {
+
+  BULLET_RADIUS: 0.5 //Circle Radius divided by scale of 10
+
+}
+
 global.ShapeConstants = ShapeConstants;
 
 function Shape(xPos,yPos,t) {
@@ -34,6 +40,9 @@ function Shape(xPos,yPos,t) {
   this.vy = 0;
   this.type = t;
   this.lastUpdate = new Date().getTime();
+
+  //Bullet list
+  var bulletList = [];
   
   //This instance's Shape properties
   this.life;
@@ -95,6 +104,33 @@ function Shape(xPos,yPos,t) {
   
   this.updateVelX = function(xNew) { that.vx = xNew; }
   this.updateVelY = function(yNew) { that.vy = yNew; }
+
+  this.getBulletList = function(){
+
+    return bulletList;
+  }
+
+  this.shoot = function(){
+    
+    //Start positon of bullet
+
+    var bulletX = that.x;
+    var bulletY = that.y;
+
+    //Bullet speed is 2 times speed of player
+    var bulletVX = 2*that.vx;
+    var bulletVY = 2*that.vy;
+
+  bulletList.push(Bullet({
+    
+    x: bulletX,
+    y: bulletY,
+    vx: bulletVX,
+    vy: bulletVY
+  }));
+
+
+  }
   
   this.move = function(direction) {    
     if(direction=='U') {
