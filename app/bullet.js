@@ -8,6 +8,19 @@ B.isActive = function()
   return B.active;
 };
  
+ B.getX = function(){
+  return B.x;
+ };
+
+ B.getY = function(){
+  return B.y;
+ };
+
+ B.kill = function(){
+  B.active = false;
+ };
+
+
 
   B.withinCanvas = function() {
     return B.x >= 0 && B.x <= CANVAS_WIDTH &&

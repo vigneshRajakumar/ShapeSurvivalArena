@@ -162,12 +162,80 @@ function SsaClient() {
   }
   
   var gameLoop = function() {
+
     myShape.updatePos();
+
+    var playerBullets = myShape.getBulletList();
+
+    playerBullets.forEach(function(bullet) {
+
+      if(bullet.isActive())
+      {
+    bullet.update();
+    bullet.draw();
+    }
+    })
+  }
+
     for(var i=0; i<oppShape.length; i++) {
       oppShape[i].updatePos();
+      manageCollisions(playerBullets,oppShape[i]);
     }
     
     render();
+
+
+  }
+
+  var manageCollisions(playerBullets,shape)
+  {
+
+    var effectiveHeight = 0;
+    var effectiveWidth = 0;
+
+    if(shape.type ="circle")
+    {
+      effectiveHeight = ShapeConstants.CIRCLE_RADIUS;
+      effectiveWidth = ShapeConstants.CIRCLE_RADIUS;
+
+    }
+    else if(shape.type = "square")
+    {
+
+      effectiveHeight = ShapeConstants.SQUARE_LENGTH;
+      effectiveWidth = ShapeConstants.SQUARE_LENGTH;
+    }
+    else{
+
+      effectiveHeight = ShapeConstants.TRIANGLE_HEIGHT;
+      effectiveWidth = ShapeConstants.TRIANGLE_LENGTH;
+    }
+
+    // Recangular Collison Detection Algorithm
+    playerBullets.forEach(function(bullet) {
+if(bullet.isActive()){
+  var xref = bullet.getX();
+  var yref = bullet.getY();
+    var BULLET_RADIUS = 0.5 
+
+    if( xref.x < shape.x + effectiveWidth &&
+         xref.x + bullet.BULLET_RADIUS > shape.x &&
+         xref.y < shape.y + effectiveHeight &&
+         xref.y + xref.height > shape.y)
+    {
+
+      bullet.kill();
+      shape.isHit(myShape);
+
+
+
+    }
+
+
+}
+
+}
+
 
 
   }
@@ -192,19 +260,6 @@ function SsaClient() {
     renderShape(myShape, "#ff0000"); //Color decided by server
 
 //Bullet Management and Rendering
-var playerBullets = myShape.getBulletList();
-
-    playerBullets.forEach(function(bullet) {
-
-      if(bullet.isActive())
-      {
-    bullet.update();
-    bullet.draw();
-    }
-    })
-  }
-
-
   
   //Expects a shape object and a string
   var renderShape = function(shape, colorCode) {
