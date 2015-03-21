@@ -3,8 +3,8 @@ function Bullet(B) {
   var BULLET_RADIUS = 0.5 //Circle Radius divided by scale 10
   B.active = true;
 
-B.isActive = function(){
-
+B.isActive = function()
+{
   return B.active;
 };
  

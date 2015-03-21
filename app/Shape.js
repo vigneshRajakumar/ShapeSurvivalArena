@@ -18,11 +18,6 @@ var ShapeConstants = {
   TRIANGLE_LENGTH : 10
 }
 
-var BulletConstants = {
-
-  BULLET_RADIUS: 0.5 //Circle Radius divided by scale of 10
-
-}
 
 global.ShapeConstants = ShapeConstants;
 

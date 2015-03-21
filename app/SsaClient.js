@@ -200,7 +200,6 @@ var playerBullets = myShape.getBulletList();
       {
     bullet.update();
     bullet.draw();
-
     }
     })
   }
