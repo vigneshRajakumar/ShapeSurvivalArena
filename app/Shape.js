@@ -34,6 +34,8 @@ function Shape(xPos,yPos,t) {
   this.vx = 0;
   this.vy = 0;
   this.type = t;
+  this.width;
+  this.height;
   this.lastUpdate = new Date().getTime();
 
   //Bullet list
@@ -48,14 +50,20 @@ function Shape(xPos,yPos,t) {
     that.life = ShapeConstants.CIRCLE_HP;
     that.vMultiplier = ShapeConstants.CIRCLE_VMULTIPLIER;
     that.strength = ShapeConstants.CIRCLE_STRENGTH;
+    that.width = 2*ShapeConstants.CIRCLE_RADIUS;
+    that.height = 2*ShapeConstants.CIRCLE_RADIUS;
   } else if(that.type=="square") {
     that.life = ShapeConstants.SQUARE_HP;
     that.vMultiplier = ShapeConstants.SQUARE_VMULTIPLIER;
     that.strength = ShapeConstants.SQUARE_STRENGTH;
+    that.width = ShapeConstants.SQUARE_LENGTH;
+    that.height = ShapeConstants.SQUARE_LENGTH;
   } else if(that.type=="triangle") {
     that.life = ShapeConstants.TRIANGLE_HP;
     that.vMultiplier = ShapeConstants.TRIANGLE_VMULTIPLIER;
     that.strength = ShapeConstants.TRIANGLE_STRENGTH;
+    that.width = ShapeConstants.TRIANGLE_LENGTH;
+    that.height = ShapeConstants.TRIANGLE_HEIGHT;
   } else { //Use circle for now
     that.life = ShapeConstants.CIRCLE_HP;
     that.vMultiplier = ShapeConstants.CIRCLE_VMULTIPLIER;
@@ -101,28 +109,27 @@ function Shape(xPos,yPos,t) {
   this.updateVelY = function(yNew) { that.vy = yNew; }
 
   this.getBulletList = function(){
-
     return bulletList;
   }
 
   this.shoot = function(){
     
+    var now = new Date().getTime();
     //Start positon of bullet
 
-    var bulletX = that.x;
-    var bulletY = that.y;
+    var bulletX = that.x + that.width/2;
+    var bulletY = that.y + that.height/2;
 
     //Bullet speed is 2 times speed of player
     var bulletVX = 2*that.vx;
     var bulletVY = 2*that.vy;
 
-  bulletList.push(Bullet({
-    
-    x: bulletX,
-    y: bulletY,
-    vx: bulletVX,
-    vy: bulletVY
-  }));
+    bulletList.push(new Bullet({
+      x: bulletX,
+      y: bulletY,
+      vx: bulletVX,
+      vy: bulletVY
+    }));
 
 
   }
