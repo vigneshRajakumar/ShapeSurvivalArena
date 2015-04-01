@@ -38,7 +38,7 @@ function SsaServer() {
 
 		unicast(conn, {type: "message", content:"You are Player " + nextPID})
 
-		players[conn.id] = new Player()
+		players[conn.id] = new Shape()
 		sockets[nextPID] = conn;
 
 		nextPID++;
