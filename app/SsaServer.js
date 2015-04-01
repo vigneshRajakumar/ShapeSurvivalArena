@@ -15,6 +15,7 @@ function SsaServer() {
 	var port; 	
 	var sockets;
 	var players;
+	var gameInterval;
 	var count;
 	var nextPID;
 
@@ -30,6 +31,11 @@ function SsaServer() {
 	}
 
 	var reset = function(msg) {
+
+		if (gameInterval !== undefined) {
+            clearInterval(gameInterval);
+            gameInterval = undefined;
+        }
 		//TODO
 	}
 
@@ -44,8 +50,32 @@ function SsaServer() {
 		nextPID++;
 	}
 
+	var gameLoop = function(){
+
+	console.log("Playing....!");
+	
+	}
+
 	var startGame = function() {
-		//TODO
+
+		 
+		 if (gameInterval !== undefined) {
+            // There is already a timer running so the game has 
+            // already started.
+            console.log("Already playing!");
+
+        } else if (Object.keys(players).length < 4) {
+            // We need two players to play.
+            console.log("Not enough players!");
+            //broadcast({type:"message", content:"Not enough player"});
+
+        } else {
+ 
+            gameInterval = setInterval(function() {gameLoop();}, 1000);
+        }
+        
+
+
 	}
 
 	this.start = function() {
@@ -58,10 +88,13 @@ function SsaServer() {
 			//init
 			count = 0;
 			nextPID = 1;
+
+			gameInterval = undefined;
 			players = new Object();
 			sockets = new Object();
 
 			sock.on("connection", function(conn) {
+
 				console.log("connected");
 				broadcast({type: "message", content:"There is now "+count+" players"});
 
@@ -75,6 +108,7 @@ function SsaServer() {
                 }
 
 				conn.on("close", function () {
+
 					reset();
 
 					count--;
@@ -86,9 +120,15 @@ function SsaServer() {
                     if (players[conn.id] === p3) p3 = undefined;
                     if (players[conn.id] === p4) p4 = undefined;
 
+
+
 					delete players[conn.id];
 
+
+
+
 					broadcast({type:"message", content:" There is now " + count + " players"});
+
 				});
 
 				conn.on("data", function (data) {
