@@ -1,10 +1,25 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-	<script src="http://cdn.jsdelivr.net/sockjs/0.3.4/sockjs.min.js">
-	</script>
+	<script src="http://cdn.jsdelivr.net/sockjs/0.3.4/sockjs.min.js"></script>
+	<link href="//maxcdn.bootstrapcdn.com/bootstrap/3.3.4/css/bootstrap.min.css" rel="stylesheet">
+	<script src="https://code.jquery.com/jquery-2.1.3.js"></script>
+	<script src="//maxcdn.bootstrapcdn.com/bootstrap/3.3.4/js/bootstrap.min.js"></script>
 	<script type="text/javascript">
 		var global = {};
+//		var playerShape;
+//		$('#shapeModal').modal({
+//			show:true
+//		});
+//		$(window).load(function(){
+//        	$('#shapeModal').modal('show');
+//    	});
+//		$('#modalSave').on('click', function () {
+//	    	var $btn = $(this).button('loading');
+//	    	playerShape = $('shape').val();
+//	    	$('#shapeModal').modal('hide');
+//	    	$btn.button('reset');
+//	  	});
 	</script>
 	<style>
 		body { text-align:center }
@@ -19,6 +34,28 @@
 	</h1>
 	<canvas id="playArena"></canvas>
 	<p id="serverMsg"></p>
+	<div class="modal fade" id="shapeModal">
+  		<div class="modal-dialog">
+    		<div class="modal-content">
+      			<div class="modal-header">
+        			<button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+        			<h4 class="modal-title">Modal title</h4>
+      			</div>
+  				<div class="modal-body">
+        			<p>Choose your shape</p>
+        			<select id="shape">
+        				<option value="square">Square</option>
+        				<option value="circle">Circle</option>
+        				<option value="triangle">Triangle</option>
+        			</select>
+      			</div>
+      			<div class="modal-footer">
+        			<button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+        			<button type="button" class="btn btn-primary" id="modalSave">Save changes</button>
+      			</div>
+    		</div><!-- /.modal-content -->
+  		</div><!-- /.modal-dialog -->
+	</div><!-- /.modal -->
 </body>
 <script type="text/javascript" src="./Ssa.js"></script>
 <script type="text/javascript" src="./Shape.js"></script>

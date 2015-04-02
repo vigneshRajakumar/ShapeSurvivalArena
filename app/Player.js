@@ -14,24 +14,8 @@ function Player(sid, pid, xPos, yPos, Type){
     this.Shape = new Shape(xPos,yPos,Type);
     this.lastUpdated = new Date().getTime();
     this.Type = Type;
-
-    this.getAbility = function() {
-      switch(Type) {
-    case "circle":
-        return "movefaster";
-        break;
-    case "triangle":
-        return "shotfaster";
-        break;
-    case "square":
-    	return "morehitpoint"
-    	break;
-    default:
-        return "not support type";
-	}
-  }
   
-  this.getShape = function() { return Shape; }
+    this.getShape = function() { return Shape; }
 }
 
 // For node.js require

@@ -14,8 +14,7 @@ function SsaClient() {
   var playArea;
 
   var myShape;
-  var oppShape;
-
+  var oppShape = new Object();
   var playerBullets;
 
   var showMessage = function(location, msg) {
@@ -42,6 +41,13 @@ function SsaClient() {
         switch (message.type) {
           case "message":
             appendMessage("serverMsg", message.content);
+            break;
+          case "you":
+            myShape = new Shape(message.xPos, message.yPos, message.shape);
+            oppShape = [];
+            break;
+          case "addPlayer":
+            oppShape[message.id] = new Shape(message.xPos, message.yPos, message.shape);
             break;
           default:
             appendMessage("servermsg", "unhandled message type" + message.type);
@@ -172,14 +178,12 @@ function SsaClient() {
   var gameLoop = function() {
 
     myShape.updatePos();
-
     playerBullets = myShape.getBulletList();
-
+    console.log(oppShape);
     for (var i = 0; i < oppShape.length; i++) {
       oppShape[i].updatePos();
       manageCollisions(playerBullets, oppShape[i]);
     }
-
     render();
   }
 
@@ -245,7 +249,10 @@ function SsaClient() {
           bullet.draw(context);
         }
       })
-
+      var id;
+      for (id in oppShape) {
+        renderShape(oppShape[id], "#00ff00", context);
+      }
       //Draw myself later so I'll be on top
       renderShape(myShape, "#ff0000", context); //Color decided by server
     }
@@ -299,18 +306,15 @@ function SsaClient() {
   }
 
   this.start = function() {
-    myShape = new Shape(100, 100, "square");
-
+    //myShape = new Shape(100, 100, "square");
+    
     //Change this value according to # of opponents
     //Determined by server
-    oppShape = new Array(3);
-    for (var i = 0; i < oppShape.length; i++) {
-      oppShape[i] = new Shape(100 * (i + 1), 100 * (i + 1), "triangle");
-    }
-
-    //initNetwork();
+    initNetwork();
     initGUI();
-
+    setTimeout(function() {
+      sendToServer({type:'newPlayer', shape:"square"});
+    }, 100);
     setInterval(function() {
       gameLoop();
     }, 1000 / Ssa.FRAME_RATE);

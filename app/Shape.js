@@ -29,8 +29,8 @@ function Shape(xPos,yPos,t) {
   this.sid; // Socket id. Used to uniquely identify players via the socket they are connected from
   this.pid; // Player id. In this case, 1 or 2 or 3 or 4
   
-  this.x = xPos;
-  this.y = yPos;
+  this.x = parseInt(xPos);
+  this.y = parseInt(yPos);
   this.vx = 0;
   this.vy = 0;
   this.type = t;
@@ -154,3 +154,5 @@ function Shape(xPos,yPos,t) {
     else if(that.vy<ShapeConstants.MOVESPEED*-1) that.vy = ShapeConstants.MOVESPEED*-1;
   }
 }
+
+global.Shape = Shape;
