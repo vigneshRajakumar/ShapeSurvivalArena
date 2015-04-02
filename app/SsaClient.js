@@ -390,7 +390,7 @@ function SsaClient() {
     initGUI();
     setTimeout(function() {
       sendToServer({type:'newPlayer', shape:"square"});
-    }, 100);
+    }, 1000);
     setInterval(function() {
       gameLoop();
     }, 1000 / Ssa.FRAME_RATE);
