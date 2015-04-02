@@ -18,7 +18,6 @@ var ShapeConstants = {
   TRIANGLE_LENGTH : 10
 }
 
-
 global.ShapeConstants = ShapeConstants;
 
 function Shape(xPos,yPos,t) {
@@ -105,8 +104,12 @@ function Shape(xPos,yPos,t) {
     that.lastUpdate = now;
   }
   
-  this.updateVelX = function(xNew) { that.vx = xNew; }
-  this.updateVelY = function(yNew) { that.vy = yNew; }
+  this.updateVelX = function(xNew) { 
+    console.log("updating xVel="+xNew);
+    that.vx = xNew; }
+  this.updateVelY = function(yNew) { 
+    console.log("updating yVel="+yNew);
+    that.vy = yNew; }
 
   this.getBulletList = function(){
     return bulletList;
