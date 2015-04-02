@@ -16,6 +16,11 @@ function SsaClient() {
   var myShape;
   var oppShape;
 
+  var upPressed = false;
+  var downPressed = false;
+  var leftPressed = false;
+  var rightPressed = false;
+  
   var playerBullets;
 
   var showMessage = function(location, msg) {
@@ -69,6 +74,9 @@ function SsaClient() {
     document.addEventListener("keydown", function(e) {
       onKeyPress(e);
     }, false); //For player movement
+    document.addEventListener("keyup", function(e) {
+      onKeyRelease(e);
+    }, false); //For player movement
     playArea.addEventListener("mousemove", function(e) {
       onMouseMove(e);
     }, false); //For player aimming
@@ -117,53 +125,118 @@ function SsaClient() {
       case 87:
       case 38:
         { // Up
-          //Set vY to a positive value
-          console.log("Up");
-          //myShape.updateVelY(ShapeConstants.MOVESPEED);
-          myShape.move('U');
+          if(upPressed == false) {
+            //Set vY to a positive value
+            console.log("Up");
+            //myShape.updateVelY(ShapeConstants.MOVESPEED);
+            myShape.move('U');
 
-          console.log("VX = " + myShape.vx + ", VY = " + myShape.vy);
-          // Send event to server
-          //sendToServer({type:"move", delay:delay});
+            console.log("VX = " + myShape.vx + ", VY = " + myShape.vy);
+            // Send event to server
+            //sendToServer({type:"move", delay:delay});
+            upPressed = true;
+          }
           break;
         }
       case 83:
       case 40:
         { // Down
-          //Set vY to a negative value
-          console.log("Down");
-          //myShape.updateVelY(ShapeConstants.MOVESPEED*-1);
-          myShape.move('D');
+          if(downPressed == false) {
+            //Set vY to a negative value
+            console.log("Down");
+            //myShape.updateVelY(ShapeConstants.MOVESPEED*-1);
+            myShape.move('D');
 
-          console.log("VX = " + myShape.vx + ", VY = " + myShape.vy);
-          // Send event to server
-          //sendToServer({type:"move", delay:delay});
+            console.log("VX = " + myShape.vx + ", VY = " + myShape.vy);
+            // Send event to server
+            //sendToServer({type:"move", delay:delay});
+            downPressed = false;
+          }
           break;
         }
       case 65:
       case 37:
         { // Left
-          //Set vX to a negative value cause left is -ve
-          console.log("Left");
-          //myShape.updateVelX(ShapeConstants.MOVESPEED*-1);
-          myShape.move('L');
+          if(leftPressed == false) {
+            //Set vX to a negative value cause left is -ve
+            console.log("Left");
+            //myShape.updateVelX(ShapeConstants.MOVESPEED*-1);
+            myShape.move('L');
 
-          console.log("VX = " + myShape.vx + ", VY = " + myShape.vy);
-          // Send event to server
-          //sendToServer({type:"move", delay:delay});
+            console.log("VX = " + myShape.vx + ", VY = " + myShape.vy);
+            // Send event to server
+            //sendToServer({type:"move", delay:delay});
+            leftPressed = true;
+          }
           break;
         }
       case 68:
       case 39:
         { // Right
-          //Set vX to a positive value cause left is +ve
-          console.log("Right");
-          //myShape.updateVelX(ShapeConstants.MOVESPEED);
-          myShape.move('R');
+          if(rightPressed == false) {
+            //Set vX to a positive value cause left is +ve
+            console.log("Right");
+            //myShape.updateVelX(ShapeConstants.MOVESPEED);
+            myShape.move('R');
 
-          console.log("VX = " + myShape.vx + ", VY = " + myShape.vy);
+            console.log("VX = " + myShape.vx + ", VY = " + myShape.vy);
+            // Send event to server
+            //sendToServer({type:"move", delay:delay});
+            rightPressed = true;
+          }
+          break;
+        }
+    }
+  }
+  
+  var onKeyRelease = function(e) {
+    /* Keycodes:
+    38: up arrow      87: W
+    40: down arrow    83: S
+    37: left arrow    65: A
+    39: right arrow   68: D
+    */
+
+    switch (e.keyCode) {
+      case 87:
+      case 38:
+        { // Stop moving up
+          //myShape.updateVelY(ShapeConstants.MOVESPEED);
+          myShape.move('D');
           // Send event to server
           //sendToServer({type:"move", delay:delay});
+          upPressed = false;
+          break;
+        }
+      case 83:
+      case 40:
+        { // Stop moving down
+          //myShape.updateVelY(ShapeConstants.MOVESPEED*-1);
+          myShape.move('U');
+          // Send event to server
+          //sendToServer({type:"move", delay:delay});
+          downPressed = false;
+          break;
+        }
+      case 65:
+      case 37:
+        { // Stop moving left
+          //myShape.updateVelX(ShapeConstants.MOVESPEED*-1);
+          myShape.move('R');
+          // Send event to server
+          //sendToServer({type:"move", delay:delay});
+          leftPressed = false;
+          break;
+        }
+      case 68:
+      case 39:
+        { // Stop moving right
+          //Set vX to a positive value cause left is +ve
+          //myShape.updateVelX(ShapeConstants.MOVESPEED);
+          myShape.move('L');
+          // Send event to server
+          //sendToServer({type:"move", delay:delay});
+          rightPressed = false;
           break;
         }
     }

@@ -64,5 +64,13 @@ function Bullet(B) {
   };
 }
 
+//If bullet moves out of game board, need to kill it
+//to free up memory
+/*this.isOutOfBounds = function() {
+    if(that.x > Ssa.WIDTH || that.x < 0 || that.y > Ssa.HEIGHT || that.y < 0) {
+    
+    } else return false;
+}*/
+
 //node.js require
 global.Bullet = Bullet;
