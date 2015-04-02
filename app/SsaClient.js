@@ -243,9 +243,7 @@ function SsaClient() {
   }
 
   var gameLoop = function() {
-  //Need to check when bullets exit bounds of the map and delete them
-  //Both on client and server side for better memory management
-  
+
     myShape.updatePos();
 
     playerBullets = myShape.getBulletList();
@@ -310,9 +308,9 @@ function SsaClient() {
       context.fillStyle = "#ff0000";
 
       //Draw other players with a loop
-      for(var i=0; i<oppShape.length; i++) {
-        renderShape(oppShape[i], "#ff00ff", context); //Color decided by serve
-      }
+      /*for(var i=0; i<oppShape.length; i++) {
+        renderShape(oppShape[i], "#ff00ff"); //Color decided by serve
+      }*/
 
       playerBullets.forEach(function(bullet) {
         if (bullet.isActive()) {
@@ -374,16 +372,16 @@ function SsaClient() {
   }
 
   this.start = function() {
-    myShape = new Shape(100, 100, "triangle");
+    myShape = new Shape(100, 100, "square");
 
     //Change this value according to # of opponents
     //Determined by server
     oppShape = new Array(3);
     for (var i = 0; i < oppShape.length; i++) {
-      oppShape[i] = new Shape(120 * (i + 1), 120 * (i + 1), "triangle");
+      oppShape[i] = new Shape(100 * (i + 1), 100 * (i + 1), "triangle");
     }
 
-    initNetwork();
+    //initNetwork();
     initGUI();
 
     setInterval(function() {
