@@ -14,6 +14,7 @@ function SsaClient() {
   var playArea;
 
   var myShape;
+  var myId;
   var oppShape = new Object();
 
   var upPressed = false;
@@ -50,10 +51,13 @@ function SsaClient() {
             break;
           case "you":
             myShape = new Shape(message.xPos, message.yPos, message.shape);
-            oppShape = [];
+            myId = message.id;
             break;
           case "addPlayer":
-            oppShape[message.id] = new Shape(message.xPos, message.yPos, message.shape);
+            if(message.id!=myId) oppShape[message.id] = new Shape(message.xPos, message.yPos, message.shape);
+            break;
+          case "removePlayer":
+            if(oppShape[message.id]!=undefined) delete oppShape[message.id];
             break;
           default:
             appendMessage("servermsg", "unhandled message type" + message.type);

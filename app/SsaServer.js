@@ -135,6 +135,24 @@ function SsaServer() {
 
 	}
 
+	var multicastUpdatePlayers  = function() {
+		var id;
+		var sockid;
+		for(sockid in sockets) {
+			for(id in players) {
+				if(players[id].sid!=sockid) {
+					unicast(sockets[sockid],{
+						id:id,
+						type:"addPlayer", 
+						shape:players[id].Shape.type, 
+						xPos:players[id].Shape.x, 
+						yPos:players[id].Shape.y
+					});
+				}
+			}
+		}
+	}
+
 	this.start = function() {
 		try {
 			var express = require("express");
@@ -176,7 +194,10 @@ function SsaServer() {
 						type: "message",
 						content: " There is now " + count + " players"
 					});
-
+					broadcast({
+						type: "removePlayer",
+						id: conn.id
+					})
 				});
 
 				conn.on("data", function(data) {
@@ -202,23 +223,10 @@ function SsaServer() {
 									type: "you",
 									shape:message.shape, 
 									xPos:players[conn.id].Shape.x, 
-									yPos:players[conn.id].Shape.y
+									yPos:players[conn.id].Shape.y,
+									id:conn.id
 								});
-								var id;
-								var sockid;
-								for(sockid in sockets) {
-									for(id in players) {
-										if(players[id].sid!=sockid) {
-											unicast(sockets[sockid],{
-												id:id,
-												type:"addPlayer", 
-												shape:players[id].Shape.type, 
-												xPos:players[id].Shape.x, 
-												yPos:players[id].Shape.y
-											});
-										}
-									}
-								}
+								multicastUpdatePlayers();
 							}
 							break;
 						default:
