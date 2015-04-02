@@ -14,7 +14,7 @@ function SsaClient() {
   var playArea;
 
   var myShape;
-  var myId;
+  //var myId;
   var oppShape = new Object();
 
   var upPressed = false;
@@ -34,6 +34,7 @@ function SsaClient() {
   }
 
   var sendToServer = function(msg) {
+    console.log("Triggering a "+msg.type+" update...\n");
     var date = new Date();
     var currentTime = date.getTime();
     msg["timestamp"] = currentTime;
@@ -51,13 +52,24 @@ function SsaClient() {
             break;
           case "you":
             myShape = new Shape(message.xPos, message.yPos, message.shape);
-            myId = message.id;
+            //myId = message.id;
+            myShape.pid = message.id;
             break;
           case "addPlayer":
-            if(message.id!=myId) oppShape[message.id] = new Shape(message.xPos, message.yPos, message.shape);
+            if(message.id!=/*myId*/myShape.pid) {
+              if(oppShape[message.id] === undefined) {
+                oppShape[message.id] = new Shape(message.xPos, message.yPos, message.shape);
+              }
+            } 
             break;
           case "removePlayer":
             if(oppShape[message.id]!=undefined) delete oppShape[message.id];
+            break;
+          case "updateVel": //Update a specific player's velocity
+            if(message.id!=myShape.pid) {
+              oppShape[message.id].updateVelX(message.xVel);
+              oppShape[message.id].updateVelY(message.yVel);
+            }
             break;
           default:
             appendMessage("servermsg", "unhandled message type" + message.type);
@@ -144,7 +156,7 @@ function SsaClient() {
 
             console.log("VX = " + myShape.vx + ", VY = " + myShape.vy);
             // Send event to server
-            //sendToServer({type:"move", delay:delay});
+            sendToServer({type:"updateVel", id:myShape.pid, xVel:myShape.vx, yVel:myShape.vy});
             upPressed = true;
           }
           break;
@@ -160,7 +172,7 @@ function SsaClient() {
 
             console.log("VX = " + myShape.vx + ", VY = " + myShape.vy);
             // Send event to server
-            //sendToServer({type:"move", delay:delay});
+            sendToServer({type:"updateVel", id:myShape.pid, xVel:myShape.vx, yVel:myShape.vy});
             downPressed = false;
           }
           break;
@@ -176,7 +188,7 @@ function SsaClient() {
 
             console.log("VX = " + myShape.vx + ", VY = " + myShape.vy);
             // Send event to server
-            //sendToServer({type:"move", delay:delay});
+            sendToServer({type:"updateVel", id:myShape.pid, xVel:myShape.vx, yVel:myShape.vy});
             leftPressed = true;
           }
           break;
@@ -192,7 +204,7 @@ function SsaClient() {
 
             console.log("VX = " + myShape.vx + ", VY = " + myShape.vy);
             // Send event to server
-            //sendToServer({type:"move", delay:delay});
+            sendToServer({type:"updateVel", id:myShape.pid, xVel:myShape.vx, yVel:myShape.vy});
             rightPressed = true;
           }
           break;
@@ -215,7 +227,7 @@ function SsaClient() {
           //myShape.updateVelY(ShapeConstants.MOVESPEED);
           myShape.move('D');
           // Send event to server
-          //sendToServer({type:"move", delay:delay});
+          sendToServer({type:"updateVel", id:myShape.pid, xVel:myShape.vx, yVel:myShape.vy});
           upPressed = false;
           break;
         }
@@ -225,7 +237,7 @@ function SsaClient() {
           //myShape.updateVelY(ShapeConstants.MOVESPEED*-1);
           myShape.move('U');
           // Send event to server
-          //sendToServer({type:"move", delay:delay});
+          sendToServer({type:"updateVel", id:myShape.pid, xVel:myShape.vx, yVel:myShape.vy});
           downPressed = false;
           break;
         }
@@ -235,7 +247,7 @@ function SsaClient() {
           //myShape.updateVelX(ShapeConstants.MOVESPEED*-1);
           myShape.move('R');
           // Send event to server
-          //sendToServer({type:"move", delay:delay});
+          sendToServer({type:"updateVel", id:myShape.pid, xVel:myShape.vx, yVel:myShape.vy});
           leftPressed = false;
           break;
         }
@@ -246,7 +258,7 @@ function SsaClient() {
           //myShape.updateVelX(ShapeConstants.MOVESPEED);
           myShape.move('L');
           // Send event to server
-          //sendToServer({type:"move", delay:delay});
+          sendToServer({type:"updateVel", id:myShape.pid, xVel:myShape.vx, yVel:myShape.vy});
           rightPressed = false;
           break;
         }
@@ -257,14 +269,18 @@ function SsaClient() {
   //Need to check when bullets exit bounds of the map and delete them
   //Both on client and server side for better memory management
   
-    myShape.updatePos();
-    playerBullets = myShape.getBulletList();
-    console.log(oppShape);
-    for (var i = 0; i < oppShape.length; i++) {
-      oppShape[i].updatePos();
-      manageCollisions(playerBullets, oppShape[i]);
+    if(myShape!=undefined) {
+      myShape.updatePos();
+      playerBullets = myShape.getBulletList();
+      
+      var i;
+      for (i in oppShape) {
+        oppShape[i].updatePos();
+        manageCollisions(playerBullets, oppShape[i]);
+      }
+
+      render();
     }
-    render();
   }
 
 
@@ -317,11 +333,6 @@ function SsaClient() {
 
       var shape = myShape;
       context.fillStyle = "#ff0000";
-
-      //Draw other players with a loop
-      for(var i=0; i<oppShape.length; i++) {
-        renderShape(oppShape[i], "#ff00ff", context); //Color decided by serve
-      }
 
       playerBullets.forEach(function(bullet) {
         if (bullet.isActive()) {

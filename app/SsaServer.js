@@ -13,7 +13,6 @@ require(LIB_PATH + "Ssa.js");
 require(LIB_PATH + "Shape.js");
 require(LIB_PATH + "Player.js");
 
-
 function SsaServer() {
 	var port;
 	var sockets;
@@ -46,6 +45,19 @@ function SsaServer() {
 			gameInterval = undefined;
 		}
 		//TODO
+	}
+
+	var getSizeOf = function(array) {
+		var size = 0;
+		var i;
+
+		for(i in array) {
+			size++;
+		}
+
+		return size;
+
+		//return Object.keys(array).length;
 	}
 
 	var newPlayer = function(conn, shape) {
@@ -135,22 +147,68 @@ function SsaServer() {
 
 	}
 
-	var multicastUpdatePlayers  = function() {
+	/*
+	Reset the positions of the players
+	#TODO
+	var reInitBoard = function() {
+		for(id in players) {
+			players[id].Shape.x;
+			players[id].Shape.y;
+		}
+
+		multicastUpdatePlayers();
+	}*/
+
+	var multicastUpdatePlayers  = function(msgType, msgOptions) {
 		var id;
 		var sockid;
-		for(sockid in sockets) {
-			for(id in players) {
-				if(players[id].sid!=sockid) {
-					unicast(sockets[sockid],{
-						id:id,
-						type:"addPlayer", 
-						shape:players[id].Shape.type, 
-						xPos:players[id].Shape.x, 
-						yPos:players[id].Shape.y
-					});
+		if (msgType == "newPlayer") {
+			var i;
+			var socketsSize = getSizeOf(sockets);
+
+			//Update existing players of this new player
+			//For all players other than the last guy that joined
+			for(i=1; i<=(socketsSize-1); i++) {
+				unicast(sockets[i], generateMsg("addPlayer", msgOptions));
+			}
+
+			for(id in players) { //For all players
+				//Tell new player of status of all other players
+				if(players[id].sid!=i) {
+					unicast(sockets[i], generateMsg("addPlayer", {id:id}));
 				}
 			}
+		} else if (msgType == "updateVel") {
+			for(sockid in sockets) { //For all connections
+				//Update the velocity of a specific player
+				unicast(sockets[sockid], generateMsg(msgType, msgOptions));
+			}
 		}
+	}
+
+	var generateMsg = function(msgType, msgOptions) {
+		var msg;
+
+		if(msgType == "addPlayer") {
+			msg = {
+				id:msgOptions.id,
+				type:"addPlayer", 
+				shape:players[msgOptions.id].Shape.type, 
+				xPos:players[msgOptions.id].Shape.x, 
+				yPos:players[msgOptions.id].Shape.y
+			};
+		} else if(msgType == "updateVel") {
+			msg = {
+				id:msgOptions.id,
+				type:"updateVel",
+				/*xVel:players[msgOptions.id].Shape.xVel,
+				yVel:players[msgOptions.id].Shape.yVel*/
+				xVel:msgOptions.xVel,
+				yVel:msgOptions.yVel
+			};
+		}
+
+		return msg;
 	}
 
 	this.start = function() {
@@ -217,6 +275,10 @@ function SsaServer() {
 								});
 								// TODO: force a disconnect
 							} else {
+								//New player joins
+								//Give him the status of all players
+								//Update server copy of state
+								//Update everyone else of this person joining
 								newPlayer(conn, message.shape);
 								console.log(players[conn.id]);
 								unicast(conn, {
@@ -226,8 +288,15 @@ function SsaServer() {
 									yPos:players[conn.id].Shape.y,
 									id:conn.id
 								});
-								multicastUpdatePlayers();
+								multicastUpdatePlayers("newPlayer", {id:conn.id});
 							}
+							break;
+						case "updateVel":
+							//Update server copy of state
+							//player[message.id].Shape.updateVelX(message.xVel);
+							//player[message.id].Shape.updateVelY(message.yVel);
+							//Update all players of this change
+							multicastUpdatePlayers("updateVel", message);
 							break;
 						default:
 							console.log("Unhandled message type:" + message.type)
