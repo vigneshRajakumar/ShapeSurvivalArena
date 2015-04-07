@@ -104,7 +104,7 @@ function SsaClient() {
   var initGUI = function() {
 
     while (document.readyState != "complete") {
-      console.log("lodaing...");
+      console.log("loading...");
     };
 
     playArea = document.getElementById("playArena");

@@ -71,25 +71,25 @@ function SsaServer() {
 		var xPos,yPos;
 
 		switch(nextPID) {
-			case 1:
-				xPos = X_POSITION_1;
-				yPos = Y_POSITION_1;
-				break;
-			case 2:
-				xPos = X_POSITION_2;
-				yPos = Y_POSITION_1;
-				break;
-			case 3:
-				xPos = X_POSITION_1;
-				yPos = Y_POSITION_2;
-				break;
-			case 4:
-				xPos = X_POSITION_2;
-				yPos = Y_POSITION_2;
-				break;
-			default:
-				xPos = X_POSITION_1;
-				yPos = Y_POSITION_1;
+		case 1:
+			xPos = X_POSITION_1;
+			yPos = Y_POSITION_1;
+			break;
+		case 2:
+			xPos = X_POSITION_2;
+			yPos = Y_POSITION_1;
+			break;
+		case 3:
+			xPos = X_POSITION_1;
+			yPos = Y_POSITION_2;
+			break;
+		case 4:
+			xPos = X_POSITION_2;
+			yPos = Y_POSITION_2;
+			break;
+		default:
+			xPos = X_POSITION_1;
+		yPos = Y_POSITION_1;
 		}
 
 		players[conn.id] = new Player(conn.id, nextPID, xPos, yPos, shape);
@@ -97,20 +97,20 @@ function SsaServer() {
 
 		//mark players
 		switch(nextPID) {
-			case 1:
-				p1 = players[conn.id];
-				break;
-			case 2:
-				p2 = players[conn.id];
-				break;
-			case 3:
-				p3 = players[conn.id];
-				break;
-			case 4:
-				p4 = players[conn.id];
-				break;
-			default:
-				break;
+		case 1:
+			p1 = players[conn.id];
+			break;
+		case 2:
+			p2 = players[conn.id];
+			break;
+		case 3:
+			p3 = players[conn.id];
+			break;
+		case 4:
+			p4 = players[conn.id];
+			break;
+		default:
+			break;
 		}
 
 		nextPID++;
@@ -197,20 +197,20 @@ function SsaServer() {
 
 		if(msgType == "addPlayer") {
 			msg = {
-				id:msgOptions.id,
-				type:"addPlayer", 
-				shape:players[msgOptions.id].Shape.type, 
-				xPos:players[msgOptions.id].Shape.x, 
-				yPos:players[msgOptions.id].Shape.y
+					id:msgOptions.id,
+					type:"addPlayer", 
+					shape:players[msgOptions.id].Shape.type, 
+					xPos:players[msgOptions.id].Shape.x, 
+					yPos:players[msgOptions.id].Shape.y
 			};
 		} else if(msgType == "updateVel") {
 			msg = {
-				id:msgOptions.id,
-				type:"updateVel",
-				/*xVel:players[msgOptions.id].Shape.xVel,
+					id:msgOptions.id,
+					type:"updateVel",
+					/*xVel:players[msgOptions.id].Shape.xVel,
 				yVel:players[msgOptions.id].Shape.yVel*/
-				xVel:msgOptions.xVel,
-				yVel:msgOptions.yVel
+					xVel:msgOptions.xVel,
+					yVel:msgOptions.yVel
 			};
 		}else if(msgType == "Shoot") {
 			msg = msgOptions;
@@ -240,7 +240,7 @@ function SsaServer() {
 					type: "message",
 					content: "There is now " + count + " players"
 				});
-				
+
 				conn.on("close", function() {
 
 					reset();
@@ -271,50 +271,50 @@ function SsaServer() {
 					var p = players[conn.id];
 
 					switch (message.type) {
-						case "start":
-							startGame();
-							break;
-						case "newPlayer":
-							if (count == 4) {
-								// Send back message that game is full
-								unicast(conn, {
-									type: "message",
-									content: "The game is full.  Come back later"
-								});
-								// TODO: force a disconnect
-							} else {
-								//New player joins
-								//Give him the status of all players
-								//Update server copy of state
-								//Update everyone else of this person joining
-								newPlayer(conn, message.shape);
-								console.log(players[conn.id]);
-								unicast(conn, {
-									type: "you",
-									shape:message.shape, 
-									xPos:players[conn.id].Shape.x, 
-									yPos:players[conn.id].Shape.y,
-									id:conn.id
-								});
-								multicastUpdatePlayers("newPlayer", {id:conn.id});
-							}
-							break;
-						case "updateVel":
+					case "start":
+						startGame();
+						break;
+					case "newPlayer":
+						if (count == 4) {
+							// Send back message that game is full
+							unicast(conn, {
+								type: "message",
+								content: "The game is full.  Come back later"
+							});
+							// TODO: force a disconnect
+						} else {
+							//New player joins
+							//Give him the status of all players
 							//Update server copy of state
-							//player[message.id].Shape.updateVelX(message.xVel);
-							//player[message.id].Shape.updateVelY(message.yVel);
-							//Update all players of this change
-							multicastUpdatePlayers("updateVel", message);
-							break;
-						case "Shoot":
-							//Update server copy of state
-							//player[message.id].Shape.updateVelX(message.xVel);
-							//player[message.id].Shape.updateVelY(message.yVel);
-							//Update all players of this change
-							multicastUpdatePlayers("Shoot", message);
-							break;
-						default:
-							console.log("Unhandled message type:" + message.type)
+							//Update everyone else of this person joining
+							newPlayer(conn, message.shape);
+							console.log(players[conn.id]);
+							unicast(conn, {
+								type: "you",
+								shape:message.shape, 
+								xPos:players[conn.id].Shape.x, 
+								yPos:players[conn.id].Shape.y,
+								id:conn.id
+							});
+							multicastUpdatePlayers("newPlayer", {id:conn.id});
+						}
+						break;
+					case "updateVel":
+						//Update server copy of state
+						//player[message.id].Shape.updateVelX(message.xVel);
+						//player[message.id].Shape.updateVelY(message.yVel);
+						//Update all players of this change
+						multicastUpdatePlayers("updateVel", message);
+						break;
+					case "Shoot":
+						//Update server copy of state
+						//player[message.id].Shape.updateVelX(message.xVel);
+						//player[message.id].Shape.updateVelY(message.yVel);
+						//Update all players of this change
+						multicastUpdatePlayers("Shoot", message);
+						break;
+					default:
+						console.log("Unhandled message type:" + message.type)
 					}
 				})
 			});
@@ -329,7 +329,7 @@ function SsaServer() {
 			app.use(express.static(__dirname));
 			console.log("Server running on http://0.0.0.0:" + Ssa.PORT + "\n")
 			console.log("Visit http://0.0.0.0:" + Ssa.PORT + "/Ssa.html in your " +
-				"browser to start the game")
+			"browser to start the game")
 		} catch (e) {
 			console.log("Cannot listen to " + port);
 			console.log("Error: " + e);
