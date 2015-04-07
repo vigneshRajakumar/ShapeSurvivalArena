@@ -47,6 +47,7 @@ function SsaClient() {
       socket = new SockJS("http://" + Ssa.SERVER_NAME + ":" + Ssa.PORT + "/ssa");
       socket.onmessage = function(e) {
         var message = JSON.parse(e.data);
+        
         switch (message.type) {
           case "message":
             appendMessage("serverMsg", message.content);
@@ -72,6 +73,22 @@ function SsaClient() {
               oppShape[message.id].updateVelY(message.yVel);
             }
             break;
+          case "Shoot": //Update a specific player's velocity
+          console.log("Recieved UpdateBullet!");
+            if(message.id!=myShape.pid) {
+
+              myShape.addBullet(new Bullet({
+      id: message.pid,
+      x: message.x,
+      y: message.y,
+      vx: message.vx,
+      vy: message.vy
+    }))
+
+            }
+            break;
+
+
           default:
             appendMessage("servermsg", "unhandled message type" + message.type);
         }
@@ -133,8 +150,15 @@ function SsaClient() {
     //Shoot weapon
 
     myShape.shoot();
+
+
+
     //Send event to server
-    //sendToServer({type:"shoot"});
+    sendToServer({type:"Shoot", id: myShape.pid,
+      x: myShape.x,
+      y: myShape.y,
+      vx: 2*myShape.vx,
+      vy: 2*myShape.vy});
   }
 
   var onKeyPress = function(e) {
@@ -269,10 +293,12 @@ function SsaClient() {
   var gameLoop = function() {
   //Need to check when bullets exit bounds of the map and delete them
   //Both on client and server side for better memory management
-  
+    
     if(myShape!=undefined) {
       myShape.updatePos();
+      myShape.deleteInactiveBullets();
       playerBullets = myShape.getBulletList();
+
       
       var i;
       for (i in oppShape) {

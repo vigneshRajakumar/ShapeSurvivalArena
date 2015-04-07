@@ -184,6 +184,12 @@ function SsaServer() {
 				unicast(sockets[sockid], generateMsg(msgType, msgOptions));
 			}
 		}
+		else if (msgType == "Shoot"){
+			for(sockid in sockets) { //For all connections
+				//Update the velocity of a specific player
+				unicast(sockets[sockid], generateMsg(msgType, msgOptions));
+			}
+		}
 	}
 
 	var generateMsg = function(msgType, msgOptions) {
@@ -206,6 +212,8 @@ function SsaServer() {
 				xVel:msgOptions.xVel,
 				yVel:msgOptions.yVel
 			};
+		}else if(msgType == "Shoot") {
+			msg = msgOptions;
 		}
 
 		return msg;
@@ -297,6 +305,13 @@ function SsaServer() {
 							//player[message.id].Shape.updateVelY(message.yVel);
 							//Update all players of this change
 							multicastUpdatePlayers("updateVel", message);
+							break;
+						case "Shoot":
+							//Update server copy of state
+							//player[message.id].Shape.updateVelX(message.xVel);
+							//player[message.id].Shape.updateVelY(message.yVel);
+							//Update all players of this change
+							multicastUpdatePlayers("Shoot", message);
 							break;
 						default:
 							console.log("Unhandled message type:" + message.type)

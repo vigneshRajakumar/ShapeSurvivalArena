@@ -116,6 +116,25 @@ function Shape(xPos,yPos,t) {
     return bulletList;
   }
 
+  this.deleteInactiveBullets = function()
+  {
+    for(i = 0; i < bulletList.length; i++)
+    {
+      if(bulletList[i]&&!bulletList[i].isActive()){
+        delete bulletList[i];
+      }
+
+    }
+
+
+  }
+
+  this.addBullet = function(bullet)
+  {
+
+    bulletList.push(bullet);
+  }
+
   this.shoot = function(){
     
     var now = new Date().getTime();
@@ -129,6 +148,7 @@ function Shape(xPos,yPos,t) {
     var bulletVY = 2*that.vy;
 
     bulletList.push(new Bullet({
+      id: that.pid,
       x: bulletX,
       y: bulletY,
       vx: bulletVX,
