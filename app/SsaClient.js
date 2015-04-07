@@ -16,6 +16,7 @@ function SsaClient() {
   var myShape;
   //var myId;
   var oppShape = new Object();
+  var myScore = 0;
 
   var upPressed = false;
   var downPressed = false;
@@ -309,7 +310,7 @@ function SsaClient() {
       if (bullet.isActive()) {
         var xref = bullet.getX();
         var yref = bullet.getY();
-        var BULLET_RADIUS = 0.5
+        var BULLET_RADIUS = 0.5;
 
         if (xref.x < shape.x + effectiveWidth &&
           xref.x + bullet.BULLET_RADIUS > shape.x &&
@@ -330,6 +331,14 @@ function SsaClient() {
       context.clearRect(0, 0, playArea.width, playArea.height);
       context.fillStyle = "#000000";
       context.fillRect(0, 0, playArea.width, playArea.height);
+
+      context.font = "small-caps 700 24px serif";
+      context.fillStyle = "#ffffff";
+      context.fillText("Hitpoints:", 30, 25)
+      context.fillText(myShape.life,30,50);
+
+      context.fillText("Score:",800, 25);
+      context.fillText(myScore, 800, 50);
 
       var shape = myShape;
       context.fillStyle = "#ff0000";

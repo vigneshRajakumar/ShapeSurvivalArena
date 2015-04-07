@@ -44,6 +44,7 @@ function Shape(xPos,yPos,t) {
   this.life;
   this.vMultiplier; //Floating point >1 and <2
   this.strength;
+  this.hitPoints;
   
   if(that.type=="circle") {
     that.life = ShapeConstants.CIRCLE_HP;

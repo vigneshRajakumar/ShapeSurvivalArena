@@ -13,7 +13,7 @@ function Bullet(B) {
   this.vx;
   this.vy;
   this.lastUpdate;
-
+  this.shooter;
   //constructor
   var that = this;
   this.active = true;
@@ -21,6 +21,7 @@ function Bullet(B) {
   this.y = B.y;
   this.vx = B.vx;
   this.vy = B.vy;
+  this.shooter = B.shooter;
   this.lastUpdate = new Date().getTime();
 
   console.log(this.vx);
