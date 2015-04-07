@@ -21,11 +21,6 @@ function SsaServer() {
 	var count;
 	var nextPID;
 	var p1,p2,p3,p4;
-	var Y_POSITION_1 = 100;
-	var Y_POSITION_2 = 400;
-	var X_POSITION_1 = 100;
-	var X_POSITION_2 = 600;
-
 
 	var broadcast = function(msg) {
 		var id;
@@ -72,24 +67,24 @@ function SsaServer() {
 
 		switch(nextPID) {
 		case 1:
-			xPos = X_POSITION_1;
-			yPos = Y_POSITION_1;
+			xPos = Ssa.X_POSITION_1;
+			yPos = Ssa.Y_POSITION_1;
 			break;
 		case 2:
-			xPos = X_POSITION_2;
-			yPos = Y_POSITION_1;
+			xPos = Ssa.X_POSITION_2;
+			yPos = Ssa.Y_POSITION_1;
 			break;
 		case 3:
-			xPos = X_POSITION_1;
-			yPos = Y_POSITION_2;
+			xPos = Ssa.X_POSITION_1;
+			yPos = Ssa.Y_POSITION_2;
 			break;
 		case 4:
-			xPos = X_POSITION_2;
-			yPos = Y_POSITION_2;
+			xPos = Ssa.X_POSITION_2;
+			yPos = Ssa.Y_POSITION_2;
 			break;
 		default:
-			xPos = X_POSITION_1;
-		yPos = Y_POSITION_1;
+			xPos = Ssa.X_POSITION_1;
+			yPos = Ssa.Y_POSITION_1;
 		}
 
 		players[conn.id] = new Player(conn.id, nextPID, xPos, yPos, shape);
@@ -120,9 +115,13 @@ function SsaServer() {
 	}
 
 	var gameLoop = function() {
+		// Server-side simulation
 
-		console.log("Playing....!");
-
+		var i;
+    	for (i in players) {
+	    	players[i].Shape.updatePos();
+	    	//manageCollisions(playerBullets, oppShape[i]);
+    	}
 	}
 
 	var startGame = function() {
@@ -138,13 +137,10 @@ function SsaServer() {
 
 		} else {
 
-			gameInterval = setInterval(function() {
+			/*gameInterval = setInterval(function() {
 				gameLoop();
-			}, 1000);
+			}, 1000);*/
 		}
-
-
-
 	}
 
 	/*
@@ -175,7 +171,7 @@ function SsaServer() {
 			for(id in players) { //For all players
 				//Tell new player of status of all other players
 				if(players[id].sid!=i) {
-					unicast(sockets[i], generateMsg("addPlayer", {id:id}));
+					unicast(sockets[i], generateMsg("addPlayer", {id:id, pid:players[id].pid}));
 				}
 			}
 		} else if (msgType == "updateVel") {
@@ -198,17 +194,18 @@ function SsaServer() {
 		if(msgType == "addPlayer") {
 			msg = {
 					id:msgOptions.id,
-					type:"addPlayer", 
+					type:"addPlayer",
 					shape:players[msgOptions.id].Shape.type, 
 					xPos:players[msgOptions.id].Shape.x, 
-					yPos:players[msgOptions.id].Shape.y
+					yPos:players[msgOptions.id].Shape.y,
+					pid:msgOptions.pid
 			};
 		} else if(msgType == "updateVel") {
 			msg = {
 					id:msgOptions.id,
 					type:"updateVel",
-					/*xVel:players[msgOptions.id].Shape.xVel,
-				yVel:players[msgOptions.id].Shape.yVel*/
+					/*xPos:players[msgOptions.id].Shape.xVel,
+					yPos:players[msgOptions.id].Shape.yVel*/
 					xVel:msgOptions.xVel,
 					yVel:msgOptions.yVel
 			};
@@ -287,6 +284,7 @@ function SsaServer() {
 							//Give him the status of all players
 							//Update server copy of state
 							//Update everyone else of this person joining
+							var currPID = nextPID;
 							newPlayer(conn, message.shape);
 							console.log(players[conn.id]);
 							unicast(conn, {
@@ -294,15 +292,16 @@ function SsaServer() {
 								shape:message.shape, 
 								xPos:players[conn.id].Shape.x, 
 								yPos:players[conn.id].Shape.y,
-								id:conn.id
+								id:conn.id,
+								pid:currPID
 							});
-							multicastUpdatePlayers("newPlayer", {id:conn.id});
+							multicastUpdatePlayers("newPlayer", {id:conn.id, pid:currPID});
 						}
 						break;
 					case "updateVel":
 						//Update server copy of state
-						//player[message.id].Shape.updateVelX(message.xVel);
-						//player[message.id].Shape.updateVelY(message.yVel);
+						players[message.id].Shape.updateVelX(message.xVel);
+						players[message.id].Shape.updateVelY(message.yVel);
 						//Update all players of this change
 						multicastUpdatePlayers("updateVel", message);
 						break;
@@ -334,6 +333,10 @@ function SsaServer() {
 			console.log("Cannot listen to " + port);
 			console.log("Error: " + e);
 		}
+
+		setInterval(function() {
+	      gameLoop();
+	    }, 1000 / Ssa.FRAME_RATE);
 	}
 }
 

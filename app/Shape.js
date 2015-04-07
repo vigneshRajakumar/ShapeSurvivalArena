@@ -1,32 +1,11 @@
-var ShapeConstants = {
-  MOVESPEED : 0.1, //In pixels
-  
-  CIRCLE_HP : 100,
-  CIRCLE_VMULTIPLIER : 1.3,
-  CIRCLE_STRENGTH : 30,
-  CIRCLE_RADIUS : 5,
-  
-  SQUARE_HP : 80,
-  SQUARE_VMULTIPLIER : 1.5,
-  SQUARE_STRENGTH : 30,
-  SQUARE_LENGTH : 10,
-  
-  TRIANGLE_HP : 80,
-  TRIANGLE_VMULTIPLIER : 1.3,
-  TRIANGLE_STRENGTH : 40,
-  TRIANGLE_HEIGHT : 10,
-  TRIANGLE_LENGTH : 10
-}
-
-global.ShapeConstants = ShapeConstants;
-
 function Shape(xPos,yPos,t) {
   //Shape properties for everyone
   var that = this;
   
   //Init values
-  this.sid; // Socket id. Used to uniquely identify players via the socket they are connected from
-  this.pid; // Player id. In this case, 1 or 2 or 3 or 4
+  this.pid = 0; // Player id. In this case, 1 or 2 or 3 or 4
+  this.serverId; // ID used to identify with server.
+  this.shapeColor = "#ff0000"; // Color to identify the shape. Default is red
   
   this.x = parseInt(xPos);
   this.y = parseInt(yPos);
@@ -41,33 +20,32 @@ function Shape(xPos,yPos,t) {
   var bulletList = [];
   
   //This instance's Shape properties
-  this.life;
   this.vMultiplier; //Floating point >1 and <2
   this.strength;
   this.hitPoints;
   
   if(that.type=="circle") {
-    that.life = ShapeConstants.CIRCLE_HP;
-    that.vMultiplier = ShapeConstants.CIRCLE_VMULTIPLIER;
-    that.strength = ShapeConstants.CIRCLE_STRENGTH;
-    that.width = 2*ShapeConstants.CIRCLE_RADIUS;
-    that.height = 2*ShapeConstants.CIRCLE_RADIUS;
+    that.life = Ssa.CIRCLE_HP;
+    that.vMultiplier = Ssa.CIRCLE_VMULTIPLIER;
+    that.strength = Ssa.CIRCLE_STRENGTH;
+    that.width = 2*Ssa.CIRCLE_RADIUS;
+    that.height = 2*Ssa.CIRCLE_RADIUS;
   } else if(that.type=="square") {
-    that.life = ShapeConstants.SQUARE_HP;
-    that.vMultiplier = ShapeConstants.SQUARE_VMULTIPLIER;
-    that.strength = ShapeConstants.SQUARE_STRENGTH;
-    that.width = ShapeConstants.SQUARE_LENGTH;
-    that.height = ShapeConstants.SQUARE_LENGTH;
+    that.life = Ssa.SQUARE_HP;
+    that.vMultiplier = Ssa.SQUARE_VMULTIPLIER;
+    that.strength = Ssa.SQUARE_STRENGTH;
+    that.width = Ssa.SQUARE_LENGTH;
+    that.height = Ssa.SQUARE_LENGTH;
   } else if(that.type=="triangle") {
-    that.life = ShapeConstants.TRIANGLE_HP;
-    that.vMultiplier = ShapeConstants.TRIANGLE_VMULTIPLIER;
-    that.strength = ShapeConstants.TRIANGLE_STRENGTH;
-    that.width = ShapeConstants.TRIANGLE_LENGTH;
-    that.height = ShapeConstants.TRIANGLE_HEIGHT;
+    that.life = Ssa.TRIANGLE_HP;
+    that.vMultiplier = Ssa.TRIANGLE_VMULTIPLIER;
+    that.strength = Ssa.TRIANGLE_STRENGTH;
+    that.width = Ssa.TRIANGLE_LENGTH;
+    that.height = Ssa.TRIANGLE_HEIGHT;
   } else { //Use circle for now
-    that.life = ShapeConstants.CIRCLE_HP;
-    that.vMultiplier = ShapeConstants.CIRCLE_VMULTIPLIER;
-    that.strength = ShapeConstants.CIRCLE_STRENGTH;
+    that.life = Ssa.CIRCLE_HP;
+    that.vMultiplier = Ssa.CIRCLE_VMULTIPLIER;
+    that.strength = Ssa.CIRCLE_STRENGTH;
   }
   
   this.isAlive = function() { return that.life>0; }
@@ -75,13 +53,13 @@ function Shape(xPos,yPos,t) {
   //Expects a Shape object
   this.isHit = function(s) {
     if(s.type=="circle") {
-      that.life -= ShapeConstants.CIRCLE_STRENGTH;
+      that.life -= Ssa.CIRCLE_STRENGTH;
     } else if(s.type=="square") {
-      that.life -= ShapeConstants.SQUARE_STRENGTH;
+      that.life -= Ssa.SQUARE_STRENGTH;
     } else if(s.type=="triangle") {
-      that.life -= ShapeConstants.TRIANGLE_STRENGTH;
+      that.life -= Ssa.TRIANGLE_STRENGTH;
     } else {
-      that.life -= ShapeConstants.CIRCLE_STRENGTH;
+      that.life -= Ssa.CIRCLE_STRENGTH;
     }
   }
   
@@ -95,22 +73,32 @@ function Shape(xPos,yPos,t) {
     var tempX = that.x + that.vx * (now-that.lastUpdate) * that.vMultiplier;
     var tempY = that.y - that.vy * (now-that.lastUpdate) * that.vMultiplier;
     
-    if(tempX>0 && tempX<(Ssa.WIDTH-ShapeConstants.SQUARE_LENGTH)) {
+    if(tempX>0 && tempX<(Ssa.WIDTH-Ssa.SQUARE_LENGTH)) {
       that.x = tempX;
     }
-    if(tempY>0 && tempY<(Ssa.HEIGHT-ShapeConstants.SQUARE_LENGTH)) {
+    if(tempY>0 && tempY<(Ssa.HEIGHT-Ssa.SQUARE_LENGTH)) {
       that.y = tempY;
     }
     
     that.lastUpdate = now;
   }
   
-  this.updateVelX = function(xNew) { 
-    console.log("updating xVel="+xNew);
-    that.vx = xNew; }
-  this.updateVelY = function(yNew) { 
-    console.log("updating yVel="+yNew);
-    that.vy = yNew; }
+  this.updateVelX = function(xNew) { that.vx = xNew; }
+  this.updateVelY = function(yNew) { that.vy = yNew; }
+
+  this.updateColor = function() {
+    if(that.pid==1) {
+      that.shapeColor = Ssa.P1_COLOR;
+    } else if(that.pid==2) {
+      that.shapeColor = Ssa.P2_COLOR;
+    } else if(that.pid==3) {
+      that.shapeColor = Ssa.P3_COLOR;
+    } else if(that.pid==4) {
+      that.shapeColor = Ssa.P4_COLOR;
+    } else {
+      that.shapeColor = Ssa.P0_COLOR;
+    }
+  }
 
   this.getBulletList = function(){
     return bulletList;
@@ -160,22 +148,22 @@ function Shape(xPos,yPos,t) {
   
   this.move = function(direction) {    
     if(direction=='U') {
-      that.vy += ShapeConstants.MOVESPEED;
+      that.vy += Ssa.MOVESPEED;
     } else if(direction=='D') {
-      that.vy -= ShapeConstants.MOVESPEED;
+      that.vy -= Ssa.MOVESPEED;
     } else if(direction=='L') {
-      that.vx -= ShapeConstants.MOVESPEED;
+      that.vx -= Ssa.MOVESPEED;
     } else if(direction=='R') {
-      that.vx += ShapeConstants.MOVESPEED;
+      that.vx += Ssa.MOVESPEED;
     } else {
       //Do nothing
     }
     
-    if(that.vx>ShapeConstants.MOVESPEED) that.vx = ShapeConstants.MOVESPEED;
-    else if(that.vx<ShapeConstants.MOVESPEED*-1) that.vx = ShapeConstants.MOVESPEED*-1;
+    if(that.vx>Ssa.MOVESPEED) that.vx = Ssa.MOVESPEED;
+    else if(that.vx<Ssa.MOVESPEED*-1) that.vx = Ssa.MOVESPEED*-1;
     
-    if(that.vy>ShapeConstants.MOVESPEED) that.vy = ShapeConstants.MOVESPEED;
-    else if(that.vy<ShapeConstants.MOVESPEED*-1) that.vy = ShapeConstants.MOVESPEED*-1;
+    if(that.vy>Ssa.MOVESPEED) that.vy = Ssa.MOVESPEED;
+    else if(that.vy<Ssa.MOVESPEED*-1) that.vy = Ssa.MOVESPEED*-1;
   }
 }
 

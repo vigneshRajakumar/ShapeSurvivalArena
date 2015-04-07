@@ -58,12 +58,16 @@ function SsaClient() {
           case "you":
             myShape = new Shape(message.xPos, message.yPos, message.shape);
             //myId = message.id;
-            myShape.pid = message.id;
+            myShape.serverId = message.id;
+            myShape.pid = message.pid;
+            myShape.updateColor();
             break;
           case "addPlayer":
-            if(message.id!=/*myId*/myShape.pid) {
+            if(message.id!=/*myId*/myShape.serverId) {
               if(oppShape[message.id] === undefined) {
                 oppShape[message.id] = new Shape(message.xPos, message.yPos, message.shape);
+                oppShape[message.id].pid = message.pid;
+                oppShape[message.id].updateColor();
               }
             } 
             break;
@@ -71,23 +75,22 @@ function SsaClient() {
             if(oppShape[message.id]!=undefined) delete oppShape[message.id];
             break;
           case "updateVel": //Update a specific player's velocity
-            if(message.id!=myShape.pid) {
+            if(message.id!=myShape.serverId) {
               oppShape[message.id].updateVelX(message.xVel);
               oppShape[message.id].updateVelY(message.yVel);
             }
             break;
           case "Shoot": //Update a specific player's velocity
           console.log("Recieved UpdateBullet!");
-            if(message.id!=myShape.pid) {
+            if(message.id!=myShape.serverId) {
 
               myShape.addBullet(new Bullet({
-      id: message.pid,
-      x: message.x,
-      y: message.y,
-      vx: message.vx,
-      vy: message.vy
-    }))
-
+                id: message.pid,
+                x: message.x,
+                y: message.y,
+                vx: message.vx,
+                vy: message.vy
+              }))
             }
             break;
 
@@ -154,10 +157,8 @@ function SsaClient() {
 
     myShape.shoot();
 
-
-
     //Send event to server
-    sendToServer({type:"Shoot", id: myShape.pid,
+    sendToServer({type:"Shoot", id: myShape.serverId,
       x: myShape.x,
       y: myShape.y,
       vx: 2*myShape.vx,
@@ -179,12 +180,12 @@ function SsaClient() {
           if(upPressed == false) {
             //Set vY to a positive value
             console.log("Up");
-            //myShape.updateVelY(ShapeConstants.MOVESPEED);
+            //myShape.updateVelY(Ssa.MOVESPEED);
             myShape.move('U');
 
             console.log("VX = " + myShape.vx + ", VY = " + myShape.vy);
             // Send event to server
-            sendToServer({type:"updateVel", id:myShape.pid, xVel:myShape.vx, yVel:myShape.vy});
+            sendToServer({type:"updateVel", id:myShape.serverId, xVel:myShape.vx, yVel:myShape.vy});
             upPressed = true;
           }
           break;
@@ -195,12 +196,12 @@ function SsaClient() {
           if(downPressed == false) {
             //Set vY to a negative value
             console.log("Down");
-            //myShape.updateVelY(ShapeConstants.MOVESPEED*-1);
+            //myShape.updateVelY(Ssa.MOVESPEED*-1);
             myShape.move('D');
 
             console.log("VX = " + myShape.vx + ", VY = " + myShape.vy);
             // Send event to server
-            sendToServer({type:"updateVel", id:myShape.pid, xVel:myShape.vx, yVel:myShape.vy});
+            sendToServer({type:"updateVel", id:myShape.serverId, xVel:myShape.vx, yVel:myShape.vy});
             downPressed = false;
           }
           break;
@@ -211,12 +212,12 @@ function SsaClient() {
           if(leftPressed == false) {
             //Set vX to a negative value cause left is -ve
             console.log("Left");
-            //myShape.updateVelX(ShapeConstants.MOVESPEED*-1);
+            //myShape.updateVelX(Ssa.MOVESPEED*-1);
             myShape.move('L');
 
             console.log("VX = " + myShape.vx + ", VY = " + myShape.vy);
             // Send event to server
-            sendToServer({type:"updateVel", id:myShape.pid, xVel:myShape.vx, yVel:myShape.vy});
+            sendToServer({type:"updateVel", id:myShape.serverId, xVel:myShape.vx, yVel:myShape.vy});
             leftPressed = true;
           }
           break;
@@ -227,12 +228,12 @@ function SsaClient() {
           if(rightPressed == false) {
             //Set vX to a positive value cause left is +ve
             console.log("Right");
-            //myShape.updateVelX(ShapeConstants.MOVESPEED);
+            //myShape.updateVelX(Ssa.MOVESPEED);
             myShape.move('R');
 
             console.log("VX = " + myShape.vx + ", VY = " + myShape.vy);
             // Send event to server
-            sendToServer({type:"updateVel", id:myShape.pid, xVel:myShape.vx, yVel:myShape.vy});
+            sendToServer({type:"updateVel", id:myShape.serverId, xVel:myShape.vx, yVel:myShape.vy});
             rightPressed = true;
           }
           break;
@@ -252,30 +253,30 @@ function SsaClient() {
       case 87:
       case 38:
         { // Stop moving up
-          //myShape.updateVelY(ShapeConstants.MOVESPEED);
+          //myShape.updateVelY(Ssa.MOVESPEED);
           myShape.move('D');
           // Send event to server
-          sendToServer({type:"updateVel", id:myShape.pid, xVel:myShape.vx, yVel:myShape.vy});
+          sendToServer({type:"updateVel", id:myShape.serverId, xVel:myShape.vx, yVel:myShape.vy});
           upPressed = false;
           break;
         }
       case 83:
       case 40:
         { // Stop moving down
-          //myShape.updateVelY(ShapeConstants.MOVESPEED*-1);
+          //myShape.updateVelY(Ssa.MOVESPEED*-1);
           myShape.move('U');
           // Send event to server
-          sendToServer({type:"updateVel", id:myShape.pid, xVel:myShape.vx, yVel:myShape.vy});
+          sendToServer({type:"updateVel", id:myShape.serverId, xVel:myShape.vx, yVel:myShape.vy});
           downPressed = false;
           break;
         }
       case 65:
       case 37:
         { // Stop moving left
-          //myShape.updateVelX(ShapeConstants.MOVESPEED*-1);
+          //myShape.updateVelX(Ssa.MOVESPEED*-1);
           myShape.move('R');
           // Send event to server
-          sendToServer({type:"updateVel", id:myShape.pid, xVel:myShape.vx, yVel:myShape.vy});
+          sendToServer({type:"updateVel", id:myShape.serverId, xVel:myShape.vx, yVel:myShape.vy});
           leftPressed = false;
           break;
         }
@@ -283,10 +284,10 @@ function SsaClient() {
       case 39:
         { // Stop moving right
           //Set vX to a positive value cause left is +ve
-          //myShape.updateVelX(ShapeConstants.MOVESPEED);
+          //myShape.updateVelX(Ssa.MOVESPEED);
           myShape.move('L');
           // Send event to server
-          sendToServer({type:"updateVel", id:myShape.pid, xVel:myShape.vx, yVel:myShape.vy});
+          sendToServer({type:"updateVel", id:myShape.serverId, xVel:myShape.vx, yVel:myShape.vy});
           rightPressed = false;
           break;
         }
@@ -294,15 +295,11 @@ function SsaClient() {
   }
 
   var gameLoop = function() {
-  //Need to check when bullets exit bounds of the map and delete them
-  //Both on client and server side for better memory management
-    
     if(myShape!=undefined) {
       myShape.updatePos();
       myShape.deleteInactiveBullets();
       playerBullets = myShape.getBulletList();
 
-      
       var i;
       for (i in oppShape) {
         oppShape[i].updatePos();
@@ -321,17 +318,17 @@ function SsaClient() {
     var effectiveWidth = 0;
 
     if (shape.type == "circle") {
-      effectiveHeight = ShapeConstants.CIRCLE_RADIUS;
-      effectiveWidth = ShapeConstants.CIRCLE_RADIUS;
+      effectiveHeight = Ssa.CIRCLE_RADIUS;
+      effectiveWidth = Ssa.CIRCLE_RADIUS;
 
     } else if (shape.type == "square") {
 
-      effectiveHeight = ShapeConstants.SQUARE_LENGTH;
-      effectiveWidth = ShapeConstants.SQUARE_LENGTH;
+      effectiveHeight = Ssa.SQUARE_LENGTH;
+      effectiveWidth = Ssa.SQUARE_LENGTH;
     } else {
 
-      effectiveHeight = ShapeConstants.TRIANGLE_HEIGHT;
-      effectiveWidth = ShapeConstants.TRIANGLE_LENGTH;
+      effectiveHeight = Ssa.TRIANGLE_HEIGHT;
+      effectiveWidth = Ssa.TRIANGLE_LENGTH;
     }
 
     // Recangular Collison Detection Algorithm
@@ -354,56 +351,51 @@ function SsaClient() {
   }
 
   var render = function() {
-      var context = playArea.getContext("2d");
+    var context = playArea.getContext("2d");
 
-      // Reset playArea border
-      context.clearRect(0, 0, playArea.width, playArea.height);
-      context.fillStyle = "#000000";
-      context.fillRect(0, 0, playArea.width, playArea.height);
+    // Render the play area
+    renderBG(context);
 
-      context.font = "small-caps 700 24px serif";
-      context.fillStyle = "#ffffff";
-      context.fillText("Hitpoints:", 30, 25)
-      context.fillText(myShape.life,30,50);
+    // Render all the bullets
+    renderBullets(context);
 
-      context.fillText("Score:",800, 25);
-      context.fillText(myScore, 800, 50);
-
-      var shape = myShape;
-      context.fillStyle = "#ff0000";
-
-      playerBullets.forEach(function(bullet) {
-        if (bullet.isActive()) {
-          bullet.update();
-          bullet.draw(context);
-        }
-      })
-      var id;
-      for (id in oppShape) {
-        renderShape(oppShape[id], "#00ff00", context);
-      }
-      //Draw myself later so I'll be on top
-      renderShape(myShape, "#ff0000", context); //Color decided by server
+    // Render the enemy shapes first
+    var id;
+    for (id in oppShape) {
+      renderShape(oppShape[id], context);
     }
-    //Bullet Management and Rendering
+
+    //Draw myself later so I'll be on top
+    renderShape(myShape, context); //Color decided by server
+
+    // Render the UI
+    renderUI(context);
+  }
+  
+  var renderBG = function(context) {
+    // Reset playArea border
+    context.clearRect(0, 0, playArea.width, playArea.height);
+    context.fillStyle = Ssa.BG_COLOR;
+    context.fillRect(0, 0, playArea.width, playArea.height);
+  }
 
   //Expects a shape object and a string
-  var renderShape = function(shape, colorCode, context) {
-    context.fillStyle = colorCode;
+  var renderShape = function(shape, context) {
+    context.fillStyle = shape.shapeColor;
 
     if (shape.type == "circle") {
       //Circle center should be in corner of bottom-right quadrant
-      var circleCenterX = shape.x + ShapeConstants.CIRCLE_RADIUS;
-      var circleCenterY = shape.y - ShapeConstants.CIRCLE_RADIUS;
+      var circleCenterX = shape.x + Ssa.CIRCLE_RADIUS;
+      var circleCenterY = shape.y - Ssa.CIRCLE_RADIUS;
 
       context.beginPath();
-      context.arc(circleCenterX, circleCenterY, ShapeConstants.CIRCLE_RADIUS, 0, Math.PI * 2, true);
+      context.arc(circleCenterX, circleCenterY, Ssa.CIRCLE_RADIUS, 0, Math.PI * 2, true);
       context.closePath();
       context.fill();
     } else if (shape.type == "square") {
       //Starting from top left-hand corner      
       context.fillRect(shape.x, shape.y,
-        ShapeConstants.SQUARE_LENGTH, ShapeConstants.SQUARE_LENGTH);
+        Ssa.SQUARE_LENGTH, Ssa.SQUARE_LENGTH);
     } else if (shape.type == "triangle") {
       //Imagine an upright triangle in a square with the base
       //of the triangle as the bottom edge of the square
@@ -414,24 +406,44 @@ function SsaClient() {
       //Then we draw a line back down to the bottom of the triangle
 
       var triangleStartX = shape.x;
-      var triangleStartY = shape.y - ShapeConstants.TRIANGLE_HEIGHT;
+      var triangleStartY = shape.y - Ssa.TRIANGLE_HEIGHT;
 
       context.beginPath();
       context.moveTo(triangleStartX, triangleStartY);
-      context.lineTo(triangleStartX + ShapeConstants.TRIANGLE_LENGTH / 2,
-        triangleStartY + ShapeConstants.TRIANGLE_HEIGHT);
-      context.lineTo(triangleStartX + ShapeConstants.TRIANGLE_LENGTH, triangleStartY);
+      context.lineTo(triangleStartX + Ssa.TRIANGLE_LENGTH / 2,
+        triangleStartY + Ssa.TRIANGLE_HEIGHT);
+      context.lineTo(triangleStartX + Ssa.TRIANGLE_LENGTH, triangleStartY);
       context.fill();
     } else { //Just use circle for now
       //Circle center should be in corner of bottom-right quadrant
-      var circleCenterX = shape.x + ShapeConstants.CIRCLE_RADIUS;
-      var circleCenterY = shape.y - ShapeConstants.CIRCLE_RADIUS;
+      var circleCenterX = shape.x + Ssa.CIRCLE_RADIUS;
+      var circleCenterY = shape.y - Ssa.CIRCLE_RADIUS;
 
       context.beginPath();
-      context.arc(circleCenterX, circleCenterY, ShapeConstants.CIRCLE_RADIUS, 0, Math.PI * 2, true);
+      context.arc(circleCenterX, circleCenterY, Ssa.CIRCLE_RADIUS, 0, Math.PI * 2, true);
       context.closePath();
       context.fill();
     }
+  }
+
+  var renderUI = function(context) {
+    context.font = "small-caps 700 24px serif";
+    context.fillStyle = "#ffffff";
+    context.fillText("Hitpoints:", 30, 25)
+    context.fillText(myShape.life,30,50);
+
+    context.fillText("Score:",800, 25);
+    context.fillText(myScore, 800, 50);
+
+  }
+
+  var renderBullets = function(context) {
+    playerBullets.forEach(function(bullet) {
+      if (bullet.isActive()) {
+        bullet.update();
+        bullet.draw(context);
+      }
+    })
   }
 
   this.start = function() {
