@@ -18,6 +18,9 @@ function SsaClient() {
   var oppShape = new Object();
   var myScore = 0;
 
+  var delay;          // delay simulated on current client 
+  
+  
   var upPressed = false;
   var downPressed = false;
   var leftPressed = false;
