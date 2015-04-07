@@ -7,6 +7,8 @@ function Shape(xPos,yPos,t) {
   this.serverId; // ID used to identify with server.
   this.shapeColor = "#ff0000"; // Color to identify the shape. Default is red
   
+  this.score = 0;
+
   this.x = parseInt(xPos);
   this.y = parseInt(yPos);
   this.vx = 0;
@@ -23,43 +25,45 @@ function Shape(xPos,yPos,t) {
   this.vMultiplier; //Floating point >1 and <2
   this.strength;
   this.hitPoints;
-  
+
   if(that.type=="circle") {
-    that.life = Ssa.CIRCLE_HP;
+    that.hitPoints = Ssa.CIRCLE_HP;
     that.vMultiplier = Ssa.CIRCLE_VMULTIPLIER;
     that.strength = Ssa.CIRCLE_STRENGTH;
     that.width = 2*Ssa.CIRCLE_RADIUS;
     that.height = 2*Ssa.CIRCLE_RADIUS;
   } else if(that.type=="square") {
-    that.life = Ssa.SQUARE_HP;
+    that.hitPoints = Ssa.SQUARE_HP;
     that.vMultiplier = Ssa.SQUARE_VMULTIPLIER;
     that.strength = Ssa.SQUARE_STRENGTH;
     that.width = Ssa.SQUARE_LENGTH;
     that.height = Ssa.SQUARE_LENGTH;
   } else if(that.type=="triangle") {
-    that.life = Ssa.TRIANGLE_HP;
+    that.hitPoints = Ssa.TRIANGLE_HP;
     that.vMultiplier = Ssa.TRIANGLE_VMULTIPLIER;
     that.strength = Ssa.TRIANGLE_STRENGTH;
     that.width = Ssa.TRIANGLE_LENGTH;
     that.height = Ssa.TRIANGLE_HEIGHT;
   } else { //Use circle for now
-    that.life = Ssa.CIRCLE_HP;
+    that.hitPoints = Ssa.CIRCLE_HP;
     that.vMultiplier = Ssa.CIRCLE_VMULTIPLIER;
     that.strength = Ssa.CIRCLE_STRENGTH;
   }
+
+  this.maxHitPoints = this.hitPoints;
   
-  this.isAlive = function() { return that.life>0; }
+  this.isAlive = function() { return that.hitPoints>0; }
   
   //Expects a Shape object
   this.isHit = function(s) {
     if(s.type=="circle") {
-      that.life -= Ssa.CIRCLE_STRENGTH;
+      that.hitPoints -= Ssa.CIRCLE_STRENGTH;
     } else if(s.type=="square") {
-      that.life -= Ssa.SQUARE_STRENGTH;
+      that.hitPoints -= Ssa.SQUARE_STRENGTH;
     } else if(s.type=="triangle") {
-      that.life -= Ssa.TRIANGLE_STRENGTH;
+      that.hitPoints -= Ssa.TRIANGLE_STRENGTH;
     } else {
-      that.life -= Ssa.CIRCLE_STRENGTH;
+      that.hitPoints -= Ssa.CIRCLE_STRENGTH;
     }
   }
   
@@ -99,6 +103,9 @@ function Shape(xPos,yPos,t) {
       that.shapeColor = Ssa.P0_COLOR;
     }
   }
+
+  this.plusScore = function() { that.score++; }
+  this.setScore = function(newScore) { that.score = newScore; }
 
   this.getBulletList = function(){
     return bulletList;

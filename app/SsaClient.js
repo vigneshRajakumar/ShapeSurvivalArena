@@ -16,10 +16,8 @@ function SsaClient() {
   var myShape;
   //var myId;
   var oppShape = new Object();
-  var myScore = 0;
 
   var delay;          // delay simulated on current client 
-  
   
   var upPressed = false;
   var downPressed = false;
@@ -111,7 +109,7 @@ function SsaClient() {
     };
 
     playArea = document.getElementById("playArena");
-    playArea.height = Ssa.HEIGHT;
+    playArea.height = Ssa.HEIGHT + Ssa.UI_HEIGHT;
     playArea.width = Ssa.WIDTH;
 
     ////////////////////////////
@@ -352,6 +350,8 @@ function SsaClient() {
 
   var render = function() {
     var context = playArea.getContext("2d");
+    // Reset playArea border
+    context.clearRect(0, 0, playArea.width, playArea.height);
 
     // Render the play area
     renderBG(context);
@@ -373,8 +373,6 @@ function SsaClient() {
   }
   
   var renderBG = function(context) {
-    // Reset playArea border
-    context.clearRect(0, 0, playArea.width, playArea.height);
     context.fillStyle = Ssa.BG_COLOR;
     context.fillRect(0, 0, playArea.width, playArea.height);
   }
@@ -427,14 +425,74 @@ function SsaClient() {
   }
 
   var renderUI = function(context) {
-    context.font = "small-caps 700 24px serif";
-    context.fillStyle = "#ffffff";
-    context.fillText("Hitpoints:", 30, 25)
-    context.fillText(myShape.life,30,50);
+    //Render UI BG
+    renderUiBg(context);
 
-    context.fillText("Score:",800, 25);
-    context.fillText(myScore, 800, 50);
+    //Render my own panel first, regardless of player #
+    renderUiPanel(context, 0, myShape);
 
+    // Render everyone else
+    var i;
+    var j = 1;
+    for(i in oppShape) {
+      renderUiPanel(context, (Ssa.WIDTH/4*j), oppShape[i]);
+      j++;
+    }
+  }
+
+  var renderUiBg = function(context) {
+    context.fillStyle = Ssa.UI_BG_COLOR;
+    context.fillRect(0, Ssa.HEIGHT, Ssa.WIDTH, Ssa.UI_HEIGHT);
+  }
+
+  var renderUiPanel = function(context, xOffset, shape) {
+    // Show details of player
+    var playerName = "PLAYER " + shape.pid;
+    var score = shape.score + " LAST HITS";
+    var topLeftStartingPosition;
+
+    // Draw "PLAYER X"
+    // Note that fillText draws text "bottom right->up", and now "top left->down"
+    context.font = Ssa.UI_PLAYER_FONT;
+    context.fillStyle = shape.shapeColor;
+    topLeftStartingPosition = Ssa.HEIGHT + Ssa.UI_Y_OFFSET + Ssa.UI_TEXT1_SIZE;
+    context.fillText(playerName, xOffset+Ssa.UI_X_OFFSET, topLeftStartingPosition);
+
+    // Draw "SCORE Y"
+    context.font = Ssa.UI_SCORE_FONT;
+    context.fillStyle = Ssa.UI_SCORE_COLOR;
+    topLeftStartingPosition = Ssa.HEIGHT + Ssa.UI_Y_OFFSET + Ssa.UI_TEXT1_SIZE + Ssa.UI_LINESPACING + Ssa.UI_TEXT2_SIZE;
+    context.fillText(score, xOffset+Ssa.UI_X_OFFSET, topLeftStartingPosition);
+
+    // Draw health boxes
+    topLeftStartingPosition = Ssa.HEIGHT + Ssa.UI_Y_OFFSET*2 + Ssa.UI_TEXT1_SIZE + Ssa.UI_LINESPACING*2 + Ssa.UI_TEXT2_SIZE;
+    renderHealthBoxes(context, xOffset+Ssa.UI_X_OFFSET, topLeftStartingPosition, shape);
+  }
+
+  var renderHealthBoxes = function(context, xOffset, yOffset, shape) {
+    // Draw outlines
+    var i, boxXStart, boxYStart;
+    context.lineWidth = Ssa.UI_HEALTH_BOX2_THICKNESS;
+    context.strokeStyle = Ssa.UI_HEALTH_BOX2_COLOR;
+
+    for(i=0; i<shape.maxHitPoints; i++) {
+      // For the max health of the shape
+      boxXStart = xOffset + i*(Ssa.UI_LINESPACING*4+Ssa.UI_HEALTH_BOX2_WIDTH);
+      boxYStart = yOffset;
+      context.beginPath();
+      context.rect(boxXStart, boxYStart, Ssa.UI_HEALTH_BOX2_WIDTH, Ssa.UI_HEALTH_BOX2_WIDTH);
+      context.stroke();
+    }
+    
+    // Draw filled boxes
+    context.fillStyle = shape.shapeColor;
+
+    for(i=0; i<shape.hitPoints; i++) {
+      // For the current health of the shape
+      boxXStart = xOffset + Ssa.UI_HEALTH_BOX2_THICKNESS*0.5 + i*(Ssa.UI_LINESPACING*4+Ssa.UI_HEALTH_BOX1_WIDTH+Ssa.UI_HEALTH_BOX2_THICKNESS);
+      boxYStart = yOffset + Ssa.UI_HEALTH_BOX2_THICKNESS*0.5 ;
+      context.fillRect(boxXStart, boxYStart, Ssa.UI_HEALTH_BOX1_WIDTH, Ssa.UI_HEALTH_BOX1_WIDTH);
+    }
   }
 
   var renderBullets = function(context) {
@@ -450,7 +508,7 @@ function SsaClient() {
     initNetwork();
     initGUI();
     setTimeout(function() {
-      sendToServer({type:'newPlayer', shape:"square"});
+      sendToServer({type:'newPlayer', shape:"circle"});
     }, 1000);
     setInterval(function() {
       gameLoop();

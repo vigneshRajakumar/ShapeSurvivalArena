@@ -8,6 +8,18 @@ var Ssa = {
 	BG_COLOR : "#525252",
 
 	UI_HEIGHT : 100,
+	UI_Y_OFFSET : 5,
+	UI_X_OFFSET : 10,
+	UI_HEALTH_BOX1_WIDTH : 20,
+	UI_HEALTH_BOX2_WIDTH : 23,
+	UI_HEALTH_BOX2_THICKNESS : 3,
+	UI_HEALTH_BOX2_COLOR : "#383838",
+	UI_PLAYER_FONT : "small-caps bold 24px Arial",
+	UI_SCORE_FONT : "small-caps bold 18px Arial",
+	UI_SCORE_COLOR : "#ffffff",
+	UI_TEXT1_SIZE : 24,
+	UI_TEXT2_SIZE : 18,
+	UI_LINESPACING : 2,
 
 	UI_BG_COLOR : "#000000",
 
