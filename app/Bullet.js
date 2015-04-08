@@ -48,6 +48,7 @@ function Bullet(B) {
   };
 
   this.draw = function(context) {
+	context.fillStyle = "#ffff00";
     context.beginPath();
     context.arc(that.x, that.y, BULLET_RADIUS, 0, Math.PI * 2, true);
     context.closePath();

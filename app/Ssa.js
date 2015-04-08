@@ -5,7 +5,7 @@ var Ssa = {
 	FRAME_RATE : 25,			//game frame rate
 	SERVER_NAME : "localhost",	//server name for testing
 
-	BG_COLOR : "#525252",
+	BG_COLOR : "#000000",//"#525252",
 
 	UI_HEIGHT : 100,
 	UI_Y_OFFSET : 5,
@@ -21,7 +21,7 @@ var Ssa = {
 	UI_TEXT2_SIZE : 18,
 	UI_LINESPACING : 2,
 
-	UI_BG_COLOR : "#000000",
+	UI_BG_COLOR : "#525252",
 
 	Y_POSITION_1 : 100,
 	Y_POSITION_2 : 400,
