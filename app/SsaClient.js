@@ -173,7 +173,6 @@ function SsaClient() {
 
     switch (e.keyCode) {
       case 87:
-      case 38:
         { // Up
           if(upPressed == false) {
             //Set vY to a positive value
@@ -189,7 +188,6 @@ function SsaClient() {
           break;
         }
       case 83:
-      case 40:
         { // Down
           if(downPressed == false) {
             //Set vY to a negative value
@@ -236,6 +234,22 @@ function SsaClient() {
           }
           break;
         }
+      case 38: { // Up
+          delay += 50;
+          // Send event to server
+          sendToServer({type:"delay", delay:delay});
+          showMessage("delay", "Delay to Server: " + delay + " ms");
+          break;
+      }
+      case 40: { // Down
+          if (delay >= 50) {
+              delay -= 50;
+              // Send event to server
+              sendToServer({type:"delay", delay:delay});
+              showMessage("delay", "Delay to Server: " + delay + " ms");
+          }
+          break;
+      }
     }
   }
   
@@ -249,7 +263,7 @@ function SsaClient() {
 
     switch (e.keyCode) {
       case 87:
-      case 38:
+     // case 38:
         { // Stop moving up
           //myShape.updateVelY(Ssa.MOVESPEED);
           myShape.move('D');
@@ -259,7 +273,7 @@ function SsaClient() {
           break;
         }
       case 83:
-      case 40:
+   //   case 40:
         { // Stop moving down
           //myShape.updateVelY(Ssa.MOVESPEED*-1);
           myShape.move('U');
@@ -504,17 +518,25 @@ function SsaClient() {
     })
   }
 
+  
   this.start = function() {
+	  
+	// Start off with no delay to the server
+    delay = 0;
+      
     initNetwork();
     initGUI();
+    
     setTimeout(function() {
       sendToServer({type:'newPlayer', shape:"circle"});
     }, 1000);
+    
     setInterval(function() {
       gameLoop();
     }, 1000 / Ssa.FRAME_RATE);
   }
 }
+
 
 //start client
 var gameClient = new SsaClient();

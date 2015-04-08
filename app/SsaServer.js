@@ -266,7 +266,7 @@ function SsaServer() {
 				conn.on("data", function(data) {
 					var message = JSON.parse(data);
 					var p = players[conn.id];
-
+					 
 					switch (message.type) {
 					case "start":
 						startGame();
@@ -311,6 +311,10 @@ function SsaServer() {
 						//player[message.id].Shape.updateVelY(message.yVel);
 						//Update all players of this change
 						multicastUpdatePlayers("Shoot", message);
+						break;
+					case "delay":
+						players[conn.id].delay = message.delay;
+						console.log("delay = ", message.delay);
 						break;
 					default:
 						console.log("Unhandled message type:" + message.type)
