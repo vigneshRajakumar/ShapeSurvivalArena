@@ -56,11 +56,11 @@ function Shape(xPos,yPos,t) {
   
   //Expects a Shape object
   this.isHit = function(s) {
-    if(s.type=="circle") {
+    if(s=="circle") {
       that.hitPoints -= Ssa.CIRCLE_STRENGTH;
-    } else if(s.type=="square") {
+    } else if(s=="square") {
       that.hitPoints -= Ssa.SQUARE_STRENGTH;
-    } else if(s.type=="triangle") {
+    } else if(s=="triangle") {
       that.hitPoints -= Ssa.TRIANGLE_STRENGTH;
     } else {
       that.hitPoints -= Ssa.CIRCLE_STRENGTH;
@@ -139,11 +139,13 @@ function Shape(xPos,yPos,t) {
     var bulletY = that.y + that.height/2;
 
     //Bullet speed is 2 times speed of player
-    var bulletVX = 2*that.vx;
-    var bulletVY = 2*that.vy;
+    var bulletVX = 2*that.vx ;
+    var bulletVY = 2*that.vy ;
+
+    
 
     bulletList.push(new Bullet({
-      id: that.pid,
+      shoot: that.pid,
       x: bulletX,
       y: bulletY,
       vx: bulletVX,

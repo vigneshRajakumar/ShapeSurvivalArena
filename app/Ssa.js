@@ -36,6 +36,7 @@ var Ssa = {
 
 	// Shape Constants
 	MOVESPEED : 0.1, //In pixels
+	CONSTVEL: 0.1,
   
   	CIRCLE_HP : 5,
   	CIRCLE_VMULTIPLIER : 1.3,

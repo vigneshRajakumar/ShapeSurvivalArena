@@ -17,6 +17,7 @@ function SsaClient() {
   //var myId;
   var oppShape = new Object();
 
+
   var delay;          // delay simulated on current client 
   
   var upPressed = false;
@@ -78,21 +79,49 @@ function SsaClient() {
               oppShape[message.id].updateVelY(message.yVel);
             }
             break;
-          case "Shoot": //Update a specific player's velocity
+          case "Shoot":
+          { //Update a specific player's velocity
           console.log("Recieved UpdateBullet!");
-            if(message.id!=myShape.serverId) {
+          console.log(message.shooter);
+          console.log(myShape.pid);
+            if(message.shooter!=myShape.pid) {
 
               myShape.addBullet(new Bullet({
-                id: message.pid,
+                shooter: message.shooter,
                 x: message.x,
                 y: message.y,
                 vx: message.vx,
                 vy: message.vy
               }))
             }
-            break;
+            break;}
+          case "Hit":{ //Update a specific player's velocity
+            console.log("MyShape PID!");
+            console.log(myShape.pid);
+            console.log("Message HIT FROM");
+            console.log(message.hitFrom);
+            console.log("Message Hit To");
+            console.log(message.hitTo);
+           
 
+            if(message.hitFrom == myShape.pid){
+              myShape.plusScore();
+            }else{
+              var k;
+              for (k in oppShape){
+                if(oppShape[k].pid == message.hitFrom)
+                  oppShape[k].plusScore();}
+            }
 
+            if(message.hitTo == myShape.pid){
+              myShape.isHit(message.hitFromShape)
+            }else{
+              var j;
+              for (j in oppShape){
+                if(oppShape[j].pid == message.hitTo)
+                  oppShape[j].isHit(message.hitFromShape);}
+            }
+            break;}
           default:
             appendMessage("servermsg", "unhandled message type" + message.type);
         }
@@ -156,7 +185,7 @@ function SsaClient() {
     myShape.shoot();
 
     //Send event to server
-    sendToServer({type:"Shoot", id: myShape.serverId,
+    sendToServer({type:"Shoot", shooter: myShape.pid,
       x: myShape.x,
       y: myShape.y,
       vx: 2*myShape.vx,

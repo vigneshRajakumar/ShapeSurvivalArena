@@ -12,6 +12,8 @@ var LIB_PATH = "./";
 require(LIB_PATH + "Ssa.js");
 require(LIB_PATH + "Shape.js");
 require(LIB_PATH + "Player.js");
+require(LIB_PATH + "Bullet.js");
+
 
 function SsaServer() {
 	var port;
@@ -21,6 +23,7 @@ function SsaServer() {
 	var count;
 	var nextPID;
 	var p1,p2,p3,p4;
+	var globalBullets = [];
 
 	var broadcast = function(msg) {
 		var id;
@@ -114,17 +117,123 @@ function SsaServer() {
 		}
 	}
 
+	var manageCollisions = function(player) {
+	var shape = player.Shape;
+	
+
+    var effectiveHeight = 0;
+    var effectiveWidth = 0;
+    //console.log("Checking hits...!");
+
+    if (shape.type == "circle") {
+      effectiveHeight = Ssa.CIRCLE_RADIUS*2;
+      effectiveWidth = Ssa.CIRCLE_RADIUS*2;
+
+    } else if (shape.type == "square") {
+
+      effectiveHeight = Ssa.SQUARE_LENGTH*2;
+      effectiveWidth = Ssa.SQUARE_LENGTH*2;
+    } else {
+
+      effectiveHeight = Ssa.TRIANGLE_HEIGHT*2;
+      effectiveWidth = Ssa.TRIANGLE_LENGTH*2;
+    }
+
+    globalBullets.forEach(function(bullet) {
+      if (bullet.isActive()) {
+        if(bullet.shooter!= player.pid){
+
+        	
+
+
+
+
+        if (((bullet.x < shape.x + effectiveWidth)&&(bullet.x > shape.x - effectiveWidth))
+        	&&((bullet.y < shape.y + effectiveHeight )&&(bullet.y > shape.y - effectiveHeight)))
+           {
+
+           	
+          bullet.kill();
+          //console.log("Sending Hit Msg!");
+
+          //Determine which Shape's bullet it is
+          var hitFromShapeLocal = "Circle";
+          var n;
+          for (n in players){
+          	if(players[n].pid == bullet.shooter){
+          		hitFromShapeLocal = players[n].Shape.type;
+          	}
+          }
+
+
+      		var hitmsg = {
+					hitFrom: bullet.shooter,
+					hitTo: player.pid,
+					hitFromShape: hitFromShapeLocal,
+					type:"Hit"
+			};
+			multicastUpdatePlayers("Hit", hitmsg);
+
+
+          
+        }
+
+    }
+      }
+    });
+
+    // Recangular Collison Detection Algorithm
+    
+  }
+
+  var bulletGarbageCollect = function(){
+  	var i;
+
+    for(i = 0; i < globalBullets.length; i++)
+    {
+      if(globalBullets[i]&&!globalBullets[i].isActive()){
+        delete globalBullets[i];
+      }
+
+    }
+  
+  }
+
+var renderBullets = function() {
+    globalBullets.forEach(function(bullet) {
+      if (bullet.isActive()) {
+        bullet.update();
+      }
+    })
+
+}
+
 	var gameLoop = function() {
 		// Server-side simulation
-
 		var i;
+
+		bulletGarbageCollect();
+		renderBullets();
     	for (i in players) {
+
 	    	players[i].Shape.updatePos();
-	    	//manageCollisions(playerBullets, oppShape[i]);
+	    	manageCollisions(players[i]);
+	    	
     	}
+
+		
 	}
 
 	var startGame = function() {
+
+
+
+gameInterval = setInterval(function() {
+				gameLoop();
+			}, 1000);
+
+
+
 		if (gameInterval !== undefined) {
 			// There is already a timer running so the game has 
 			// already started.
@@ -137,9 +246,9 @@ function SsaServer() {
 
 		} else {
 
-			/*gameInterval = setInterval(function() {
+			gameInterval = setInterval(function() {
 				gameLoop();
-			}, 1000);*/
+			}, 1000);
 		}
 	}
 
@@ -186,8 +295,13 @@ function SsaServer() {
 				unicast(sockets[sockid], generateMsg(msgType, msgOptions));
 			}
 		}
+		else if (msgType == "Hit"){
+			for(sockid in sockets) { //For all connections
+				//Update the velocity of a specific player
+				unicast(sockets[sockid], generateMsg(msgType, msgOptions));
+			}
 	}
-
+}
 	var generateMsg = function(msgType, msgOptions) {
 		var msg;
 
@@ -210,6 +324,10 @@ function SsaServer() {
 					yVel:msgOptions.yVel
 			};
 		}else if(msgType == "Shoot") {
+			msg = msgOptions;
+		}
+		else if( msgType == "Hit")
+		{
 			msg = msgOptions;
 		}
 
@@ -310,6 +428,28 @@ function SsaServer() {
 						//player[message.id].Shape.updateVelX(message.xVel);
 						//player[message.id].Shape.updateVelY(message.yVel);
 						//Update all players of this change
+
+						//Account for client delay
+						var dlay = 0;
+						if(players[conn.id].delay){
+							dlay = players[conn.id].delay;
+						}
+
+						//RollBack by client Delay
+
+						var normalisedX = message.x - dlay*message.vx;
+						var normalisedY = message.y - dlay*message.vy;
+
+
+
+						globalBullets.push(new Bullet({
+                		shooter: message.shooter,
+                		x: normalisedX,
+                		y: normalisedY,
+                		vx: message.vx,
+                		vy: message.vy
+              			}))
+
 						multicastUpdatePlayers("Shoot", message);
 						break;
 					case "delay":
