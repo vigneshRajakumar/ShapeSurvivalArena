@@ -60,7 +60,6 @@ function SsaClient() {
             myShape.serverId = message.id;
             myShape.pid = message.pid;
             myShape.initShape();
-            console.log(myShape);
             break;
           case "addPlayer":
             if(message.id!=/*myId*/myShape.serverId) {
@@ -83,9 +82,9 @@ function SsaClient() {
             break;
           case "Shoot":
           { //Update a specific player's velocity
-          console.log("Recieved UpdateBullet!");
-          console.log(message.shooter);
-          console.log(myShape.pid);
+          //console.log("Recieved UpdateBullet!");
+          //console.log(message.shooter);
+          //console.log(myShape.pid);
             if(message.shooter!=myShape.pid) {
 
               myShape.addBullet(new Bullet({
@@ -98,12 +97,12 @@ function SsaClient() {
             }
             break;}
           case "Hit":{ //Update a specific player's velocity
-            console.log("MyShape PID!");
+            /*console.log("MyShape PID!");
             console.log(myShape.pid);
             console.log("Message HIT FROM");
             console.log(message.hitFrom);
             console.log("Message Hit To");
-            console.log(message.hitTo);
+            console.log(message.hitTo);*/
            
 
             if(message.hitFrom == myShape.pid){
@@ -208,8 +207,6 @@ function SsaClient() {
         { // Up
           if(upPressed == false) {
             //Set vY to a positive value
-            //console.log("Up");
-            //myShape.updateVelY(Ssa.MOVESPEED);
             myShape.move('U');
 
             //console.log("VX = " + myShape.vx + ", VY = " + myShape.vy);
@@ -223,8 +220,6 @@ function SsaClient() {
         { // Down
           if(downPressed == false) {
             //Set vY to a negative value
-            //console.log("Down");
-            //myShape.updateVelY(Ssa.MOVESPEED*-1);
             myShape.move('D');
 
             //console.log("VX = " + myShape.vx + ", VY = " + myShape.vy);
@@ -239,8 +234,6 @@ function SsaClient() {
         { // Left
           if(leftPressed == false) {
             //Set vX to a negative value cause left is -ve
-            //console.log("Left");
-            //myShape.updateVelX(Ssa.MOVESPEED*-1);
             myShape.move('L');
 
             //console.log("VX = " + myShape.vx + ", VY = " + myShape.vy);
@@ -255,8 +248,6 @@ function SsaClient() {
         { // Right
           if(rightPressed == false) {
             //Set vX to a positive value cause left is +ve
-            //console.log("Right");
-            //myShape.updateVelX(Ssa.MOVESPEED);
             myShape.move('R');
 
             //console.log("VX = " + myShape.vx + ", VY = " + myShape.vy);
