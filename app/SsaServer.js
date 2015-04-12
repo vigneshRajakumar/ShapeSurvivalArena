@@ -224,6 +224,8 @@ function SsaServer() {
 			var express = require("express");
 			var http = require("http");
 			var sockjs = require("sockjs");
+			var bodyParser = require("body-parser");
+			var ejs = require('ejs');
 			var sock = sockjs.createServer();
 
 			//init
@@ -327,6 +329,29 @@ function SsaServer() {
 			});
 			httpServer.listen(Ssa.PORT, '0.0.0.0');
 			app.use(express.static(__dirname));
+			app.set('views', __dirname);
+			app.use(bodyParser.json());
+			app.use(bodyParser.urlencoded({
+				extended:true
+			}));
+			app.engine('html', ejs.renderFile);
+			//handler
+			var shape;
+			var userName;
+			app.post('/user', function(sReq, sRes) {
+				shape = sReq.body.shape;
+				userName = sReq.body.username;
+				console.log(shape);
+				sRes.redirect('/play');
+			});
+			app.get('/play', function(req, res) {
+				console.log(shape);
+				console.log(userName);
+			    res.render('ssa.html', {
+			        shape: shape,
+			        user: userName
+		    	});
+			});
 			console.log("Server running on http://0.0.0.0:" + Ssa.PORT + "\n")
 			console.log("Visit http://0.0.0.0:" + Ssa.PORT + "/Ssa.html in your " +
 				"browser to start the game")

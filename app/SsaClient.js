@@ -435,7 +435,7 @@ function SsaClient() {
     initNetwork();
     initGUI();
     setTimeout(function() {
-      sendToServer({type:'newPlayer', shape:"square"});
+      sendToServer({type:'newPlayer', shape:shape});
     }, 1000);
     setInterval(function() {
       gameLoop();
