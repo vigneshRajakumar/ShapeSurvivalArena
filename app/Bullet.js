@@ -24,7 +24,7 @@ function Bullet(B) {
   this.shooter = B.shooter;
   this.lastUpdate = new Date().getTime();
 
-  console.log(this.vx);
+  //console.log(this.vx);
 
   this.isActive = function() {
     return that.active;

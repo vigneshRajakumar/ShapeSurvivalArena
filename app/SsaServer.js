@@ -118,82 +118,63 @@ function SsaServer() {
 	}
 
 	var manageCollisions = function(player) {
-	var shape = player.Shape;
+		var shape = player.Shape;
 	
+	    var effectiveHeight = 0;
+    	var effectiveWidth = 0;
+    	//console.log("Checking hits...!");
 
-    var effectiveHeight = 0;
-    var effectiveWidth = 0;
-    //console.log("Checking hits...!");
+	    if (shape.type == "circle") {
+	    	effectiveHeight = Ssa.CIRCLE_RADIUS*2;
+	    	effectiveWidth = Ssa.CIRCLE_RADIUS*2;
+    	} else if (shape.type == "square") {
+		    effectiveHeight = Ssa.SQUARE_LENGTH*2;
+		    effectiveWidth = Ssa.SQUARE_LENGTH*2;
+	    } else {
+		    effectiveHeight = Ssa.TRIANGLE_HEIGHT*2;
+		    effectiveWidth = Ssa.TRIANGLE_LENGTH*2;
+	    }
 
-    if (shape.type == "circle") {
-      effectiveHeight = Ssa.CIRCLE_RADIUS*2;
-      effectiveWidth = Ssa.CIRCLE_RADIUS*2;
+	    globalBullets.forEach(function(bullet) {
+    		if (bullet.isActive()) {
+        		if(bullet.shooter!= player.pid){
+			        if (((bullet.x < shape.x + effectiveWidth)&&(bullet.x > shape.x - effectiveWidth))
+			        	&&((bullet.y < shape.y + effectiveHeight )&&(bullet.y > shape.y - effectiveHeight)))
+			           {
+			           	// Suggest removing this s.t. the bullet continues on (ie pierces targets)
+				        bullet.kill();
+				        //console.log("Sending Hit Msg!");
 
-    } else if (shape.type == "square") {
+          				//Determine which Shape's bullet it is
+					    var hitFromShapeLocal = "Circle";
+					    var n;
+					    for (n in players){
+					      	if(players[n].pid == bullet.shooter){
+          						hitFromShapeLocal = players[n].Shape.type;
+          					}
+          				}
 
-      effectiveHeight = Ssa.SQUARE_LENGTH*2;
-      effectiveWidth = Ssa.SQUARE_LENGTH*2;
-    } else {
-
-      effectiveHeight = Ssa.TRIANGLE_HEIGHT*2;
-      effectiveWidth = Ssa.TRIANGLE_LENGTH*2;
+      					var hitmsg = {
+							hitFrom: bullet.shooter,
+							hitTo: player.pid,
+							hitFromShape: hitFromShapeLocal,
+							type:"Hit"
+						};
+						multicastUpdatePlayers("Hit", hitmsg);
+        			}
+				}
+			}
+    	});
+    		// Recangular Collison Detection Algorithm
     }
 
-    globalBullets.forEach(function(bullet) {
-      if (bullet.isActive()) {
-        if(bullet.shooter!= player.pid){
-
-        	
-
-
-
-
-        if (((bullet.x < shape.x + effectiveWidth)&&(bullet.x > shape.x - effectiveWidth))
-        	&&((bullet.y < shape.y + effectiveHeight )&&(bullet.y > shape.y - effectiveHeight)))
-           {
-
-           	
-          bullet.kill();
-          //console.log("Sending Hit Msg!");
-
-          //Determine which Shape's bullet it is
-          var hitFromShapeLocal = "Circle";
-          var n;
-          for (n in players){
-          	if(players[n].pid == bullet.shooter){
-          		hitFromShapeLocal = players[n].Shape.type;
-          	}
-          }
-
-
-      		var hitmsg = {
-					hitFrom: bullet.shooter,
-					hitTo: player.pid,
-					hitFromShape: hitFromShapeLocal,
-					type:"Hit"
-			};
-			multicastUpdatePlayers("Hit", hitmsg);
-
-
-          
-        }
-
-    }
-      }
-    });
-
-    // Recangular Collison Detection Algorithm
-    
-  }
-
-  var bulletGarbageCollect = function(){
-  	var i;
-
-    for(i = 0; i < globalBullets.length; i++)
-    {
-      if(globalBullets[i]&&!globalBullets[i].isActive()){
-        delete globalBullets[i];
-      }
+	var bulletGarbageCollect = function(){
+  		var i;
+    	
+    	for(i = 0; i < globalBullets.length; i++) {
+      		if(globalBullets[i]&&!globalBullets[i].isActive()){
+        		delete globalBullets[i];
+			}
 
     }
   

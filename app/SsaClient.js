@@ -103,25 +103,31 @@ function SsaClient() {
             console.log(message.hitFrom);
             console.log("Message Hit To");
             console.log(message.hitTo);*/
-           
+            
+            var kill = false;
 
-            if(message.hitFrom == myShape.pid){
-              myShape.plusScore();
-            }else{
-              var k;
-              for (k in oppShape){
-                if(oppShape[k].pid == message.hitFrom)
-                  oppShape[k].plusScore();}
-            }
-
+            // Set who got hit
             if(message.hitTo == myShape.pid){
-              myShape.isHit(message.hitFromShape)
-            }else{
+              kill = myShape.isHit(message.hitFromShape);
+            } else {
               var j;
-              for (j in oppShape){
-                if(oppShape[j].pid == message.hitTo)
-                  oppShape[j].isHit(message.hitFromShape);}
+              for (j in oppShape) {
+                if(oppShape[j].pid == message.hitTo) kill = oppShape[j].isHit(message.hitFromShape);
+              }
             }
+
+            // Check if the hit is a kill
+            if(kill==true) {
+              // Credit the score
+              if(message.hitFrom == myShape.pid){
+                myShape.plusScore();
+              } else {
+              var k;
+              for(k in oppShape) {
+                if(oppShape[k].pid == message.hitFrom) oppShape[k].plusScore();}
+              }
+            }
+
             break;}
           default:
             appendMessage("servermsg", "unhandled message type" + message.type);
@@ -403,7 +409,7 @@ function SsaClient() {
     }
 
     //Draw myself later so I'll be on top
-    renderShape(myShape, context); //Color decided by server
+    renderShape(myShape, context); //Color decided by player
 
     // Render the UI
     renderUI(context);

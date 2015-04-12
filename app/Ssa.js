@@ -33,6 +33,7 @@ var Ssa = {
 	P3_COLOR : "#00ff00",
 	P4_COLOR : "#ff00ff",
 	P0_COLOR : "#ffffff", // Undefined player
+	INVUL_COLOR : "fff600",
 
 	// Shape Constants
 	MOVESPEED : 0.1, //In pixels

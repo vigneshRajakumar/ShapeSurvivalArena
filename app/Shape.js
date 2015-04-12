@@ -51,6 +51,13 @@ function Shape(xPos,yPos,t) {
       that.height = Ssa.TRIANGLE_HEIGHT;
     }
 
+    that.updateColor();
+    this.maxHitPoints = this.hitPoints;
+
+    that.init = true;
+  }
+
+  this.updateColor = function() {
     if(that.pid==1) {
       that.shapeColor = Ssa.P1_COLOR;
     } else if(that.pid==2) {
@@ -62,16 +69,16 @@ function Shape(xPos,yPos,t) {
     } else {
       that.shapeColor = Ssa.P0_COLOR;
     }
-
-    this.maxHitPoints = this.hitPoints;
-
-    that.init = true;
   }
   
   this.isAlive = function() { return that.hitPoints>0; }
   
   //Expects a Shape object
   this.isHit = function(s) {
+    // If this shape is already dead, no further hits will deduct health
+    // Report as NOT a kill shot
+    if(!(that.isAlive())) return false;
+
     if(s=="circle") {
       that.hitPoints -= Ssa.CIRCLE_STRENGTH;
     } else if(s=="square") {
@@ -81,6 +88,30 @@ function Shape(xPos,yPos,t) {
     } else {
       that.hitPoints -= Ssa.CIRCLE_STRENGTH;
     }
+
+    // If this hit kills this shape, reset its health
+    if(!(that.isAlive())) {
+      that.shapeColor = Ssa.INVUL_COLOR;
+      // Create another thread that resets the health of the shape after 3s
+      setTimeout(that.resetHealth, 3000);
+
+      return true;
+    } else {
+      // Just report it as not a kill shot
+      return false;
+    }
+  }
+
+  this.resetHealth = function() {
+    if(that.type=="circle") {
+      that.hitPoints = Ssa.CIRCLE_HP;
+    } else if(that.type=="square") {
+      that.hitPoints = Ssa.SQUARE_HP;
+    } else if(that.type=="triangle") {
+      that.hitPoints = Ssa.TRIANGLE_HP;
+    }
+
+    that.updateColor();
   }
   
   this.forceUpdatePos = function(xNew, yNew) {
