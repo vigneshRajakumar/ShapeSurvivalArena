@@ -184,14 +184,15 @@ function SsaClient() {
   var onMouseClick = function(e) {
     //Shoot weapon
 
-    myShape.shoot();
+    bullet = myShape.shoot();
 
     //Send event to server
-    sendToServer({type:"Shoot", shooter: myShape.pid,
-      x: myShape.x,
-      y: myShape.y,
-      vx: 2*myShape.vx,
-      vy: 2*myShape.vy});
+    sendToServer({type:"Shoot",
+      shooter: bullet.shooter,
+      x: bullet.x,
+      y: bullet.y,
+      vx: bullet.vx,
+      vy: bullet.vy});
   }
 
   var onKeyPress = function(e) {

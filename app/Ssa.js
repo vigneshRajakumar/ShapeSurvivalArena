@@ -54,7 +54,8 @@ var Ssa = {
   	TRIANGLE_HEIGHT : 14,
   	TRIANGLE_LENGTH : 14,
 
-  	BULLET_RADIUS : 3
+  	BULLET_RADIUS : 3,
+  	BULLET_SPEED_MUL : 3
 }
 
 global.Ssa = Ssa;

@@ -140,33 +140,37 @@ function Shape(xPos,yPos,t) {
     var bulletY = that.y + that.height/2;
 
     //Bullet speed is 2 times speed of player
-    var bulletVX = 2*that.vx;
-    var bulletVY = 2*that.vy;
+    var bulletVX = Ssa.BULLET_SPEED_MUL*that.vx;
+    var bulletVY = Ssa.BULLET_SPEED_MUL*that.vy;
 
     if(bulletVX==0 && bulletVY==0) {
        // If bullet will end up stationary, sample last known direction and fire that way
       if(that.direction=='U') { // Up
         bulletVX = 0;
-        bulletVY = 2*Ssa.MOVESPEED;
+        bulletVY = Ssa.BULLET_SPEED_MUL*Ssa.MOVESPEED;
       } else if(that.direction=='D') { // Down
         bulletVX = 0;
-        bulletVY = 2*Ssa.MOVESPEED*-1;
+        bulletVY = Ssa.BULLET_SPEED_MUL*Ssa.MOVESPEED*-1;
       } else if(that.direction=='L') { // Left
-        bulletVX = 2*Ssa.MOVESPEED*-1;
+        bulletVX = Ssa.BULLET_SPEED_MUL*Ssa.MOVESPEED*-1;
         bulletVY = 0;
       } else { // Right
-        bulletVX = 2*Ssa.MOVESPEED;
+        bulletVX = Ssa.BULLET_SPEED_MUL*Ssa.MOVESPEED;
         bulletVY = 0;
       }
     }
 
-    bulletList.push(new Bullet({
-      shoot: that.pid,
+    bullet = new Bullet(new Bullet({
+      shooter: that.pid,
       x: bulletX,
       y: bulletY,
       vx: bulletVX,
       vy: bulletVY
     }));
+
+    bulletList.push(bullet);
+
+    return bullet;
   }
   
   this.move = function(direction) {
