@@ -5,7 +5,7 @@ function Player(sid, pid, xPos, yPos, Type){
     this.pid;   // Player id. In this case, 1 or 2 or 3 or 4
     this.Shape;// player's object shape
     this.Type;  
-    this.delay; // player's delay 
+    this.delay = 0; // player's delay 
     
     this.lastUpdated; // timestamp of last player update
 

@@ -59,14 +59,15 @@ function SsaClient() {
             //myId = message.id;
             myShape.serverId = message.id;
             myShape.pid = message.pid;
-            myShape.updateColor();
+            myShape.initShape();
+            console.log(myShape);
             break;
           case "addPlayer":
             if(message.id!=/*myId*/myShape.serverId) {
               if(oppShape[message.id] === undefined) {
                 oppShape[message.id] = new Shape(message.xPos, message.yPos, message.shape);
                 oppShape[message.id].pid = message.pid;
-                oppShape[message.id].updateColor();
+                oppShape[message.id].initShape();
               }
             } 
             break;
@@ -77,6 +78,7 @@ function SsaClient() {
             if(message.id!=myShape.serverId) {
               oppShape[message.id].updateVelX(message.xVel);
               oppShape[message.id].updateVelY(message.yVel);
+              oppShape[message.id].forceUpdatePos(message.xPos, message.yPos);
             }
             break;
           case "Shoot":
@@ -205,13 +207,13 @@ function SsaClient() {
         { // Up
           if(upPressed == false) {
             //Set vY to a positive value
-            console.log("Up");
+            //console.log("Up");
             //myShape.updateVelY(Ssa.MOVESPEED);
             myShape.move('U');
 
-            console.log("VX = " + myShape.vx + ", VY = " + myShape.vy);
+            //console.log("VX = " + myShape.vx + ", VY = " + myShape.vy);
             // Send event to server
-            sendToServer({type:"updateVel", id:myShape.serverId, xVel:myShape.vx, yVel:myShape.vy});
+            sendToServer({type:"updateVel", id:myShape.serverId, xVel:myShape.vx, yVel:myShape.vy, xPos:myShape.x, yPos:myShape.y});
             upPressed = true;
           }
           break;
@@ -220,45 +222,45 @@ function SsaClient() {
         { // Down
           if(downPressed == false) {
             //Set vY to a negative value
-            console.log("Down");
+            //console.log("Down");
             //myShape.updateVelY(Ssa.MOVESPEED*-1);
             myShape.move('D');
 
-            console.log("VX = " + myShape.vx + ", VY = " + myShape.vy);
+            //console.log("VX = " + myShape.vx + ", VY = " + myShape.vy);
             // Send event to server
-            sendToServer({type:"updateVel", id:myShape.serverId, xVel:myShape.vx, yVel:myShape.vy});
-            downPressed = false;
+            sendToServer({type:"updateVel", id:myShape.serverId, xVel:myShape.vx, yVel:myShape.vy, xPos:myShape.x, yPos:myShape.y});
+            downPressed = true;
           }
           break;
         }
       case 65:
-      case 37:
+      //case 37:
         { // Left
           if(leftPressed == false) {
             //Set vX to a negative value cause left is -ve
-            console.log("Left");
+            //console.log("Left");
             //myShape.updateVelX(Ssa.MOVESPEED*-1);
             myShape.move('L');
 
-            console.log("VX = " + myShape.vx + ", VY = " + myShape.vy);
+            //console.log("VX = " + myShape.vx + ", VY = " + myShape.vy);
             // Send event to server
-            sendToServer({type:"updateVel", id:myShape.serverId, xVel:myShape.vx, yVel:myShape.vy});
+            sendToServer({type:"updateVel", id:myShape.serverId, xVel:myShape.vx, yVel:myShape.vy, xPos:myShape.x, yPos:myShape.y});
             leftPressed = true;
           }
           break;
         }
       case 68:
-      case 39:
+      //case 39:
         { // Right
           if(rightPressed == false) {
             //Set vX to a positive value cause left is +ve
-            console.log("Right");
+            //console.log("Right");
             //myShape.updateVelX(Ssa.MOVESPEED);
             myShape.move('R');
 
-            console.log("VX = " + myShape.vx + ", VY = " + myShape.vy);
+            //console.log("VX = " + myShape.vx + ", VY = " + myShape.vy);
             // Send event to server
-            sendToServer({type:"updateVel", id:myShape.serverId, xVel:myShape.vx, yVel:myShape.vy});
+            sendToServer({type:"updateVel", id:myShape.serverId, xVel:myShape.vx, yVel:myShape.vy, xPos:myShape.x, yPos:myShape.y});
             rightPressed = true;
           }
           break;
@@ -295,9 +297,9 @@ function SsaClient() {
      // case 38:
         { // Stop moving up
           //myShape.updateVelY(Ssa.MOVESPEED);
-          myShape.move('D');
+          myShape.stop('U');
           // Send event to server
-          sendToServer({type:"updateVel", id:myShape.serverId, xVel:myShape.vx, yVel:myShape.vy});
+          sendToServer({type:"updateVel", id:myShape.serverId, xVel:myShape.vx, yVel:myShape.vy, xPos:myShape.x, yPos:myShape.y});
           upPressed = false;
           break;
         }
@@ -305,9 +307,9 @@ function SsaClient() {
    //   case 40:
         { // Stop moving down
           //myShape.updateVelY(Ssa.MOVESPEED*-1);
-          myShape.move('U');
+          myShape.stop('D');
           // Send event to server
-          sendToServer({type:"updateVel", id:myShape.serverId, xVel:myShape.vx, yVel:myShape.vy});
+          sendToServer({type:"updateVel", id:myShape.serverId, xVel:myShape.vx, yVel:myShape.vy, xPos:myShape.x, yPos:myShape.y});
           downPressed = false;
           break;
         }
@@ -315,9 +317,9 @@ function SsaClient() {
       case 37:
         { // Stop moving left
           //myShape.updateVelX(Ssa.MOVESPEED*-1);
-          myShape.move('R');
+          myShape.stop('R');
           // Send event to server
-          sendToServer({type:"updateVel", id:myShape.serverId, xVel:myShape.vx, yVel:myShape.vy});
+          sendToServer({type:"updateVel", id:myShape.serverId, xVel:myShape.vx, yVel:myShape.vy, xPos:myShape.x, yPos:myShape.y});
           leftPressed = false;
           break;
         }
@@ -326,9 +328,9 @@ function SsaClient() {
         { // Stop moving right
           //Set vX to a positive value cause left is +ve
           //myShape.updateVelX(Ssa.MOVESPEED);
-          myShape.move('L');
+          myShape.stop('L');
           // Send event to server
-          sendToServer({type:"updateVel", id:myShape.serverId, xVel:myShape.vx, yVel:myShape.vy});
+          sendToServer({type:"updateVel", id:myShape.serverId, xVel:myShape.vx, yVel:myShape.vy, xPos:myShape.x, yPos:myShape.y});
           rightPressed = false;
           break;
         }
@@ -377,7 +379,7 @@ function SsaClient() {
       if (bullet.isActive()) {
         var xref = bullet.getX();
         var yref = bullet.getY();
-        var BULLET_RADIUS = 0.5;
+        var BULLET_RADIUS = Ssa.BULLET_RADIUS;
 
         if (xref.x < shape.x + effectiveWidth &&
           xref.x + bullet.BULLET_RADIUS > shape.x &&

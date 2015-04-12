@@ -225,14 +225,9 @@ var renderBullets = function() {
 	}
 
 	var startGame = function() {
-
-
-
-gameInterval = setInterval(function() {
-				gameLoop();
-			}, 1000);
-
-
+		gameInterval = setInterval(function() {
+			gameLoop();
+		}, 1000);
 
 		if (gameInterval !== undefined) {
 			// There is already a timer running so the game has 
@@ -243,26 +238,12 @@ gameInterval = setInterval(function() {
 			// We need two players to play.
 			console.log("Not enough players!");
 			//broadcast({type:"message", content:"Not enough player"});
-
 		} else {
-
-			gameInterval = setInterval(function() {
+			/*gameInterval = setInterval(function() {
 				gameLoop();
-			}, 1000);
+			}, 1000);*/
 		}
 	}
-
-	/*
-	Reset the positions of the players
-	#TODO
-	var reInitBoard = function() {
-		for(id in players) {
-			players[id].Shape.x;
-			players[id].Shape.y;
-		}
-
-		multicastUpdatePlayers();
-	}*/
 
 	var multicastUpdatePlayers  = function(msgType, msgOptions) {
 		var id;
@@ -318,8 +299,8 @@ gameInterval = setInterval(function() {
 			msg = {
 					id:msgOptions.id,
 					type:"updateVel",
-					/*xPos:players[msgOptions.id].Shape.xVel,
-					yPos:players[msgOptions.id].Shape.yVel*/
+					xPos:players[msgOptions.id].Shape.x,
+					yPos:players[msgOptions.id].Shape.y,
 					xVel:msgOptions.xVel,
 					yVel:msgOptions.yVel
 			};
@@ -422,6 +403,7 @@ gameInterval = setInterval(function() {
 						//Update server copy of state
 						players[message.id].Shape.updateVelX(message.xVel);
 						players[message.id].Shape.updateVelY(message.yVel);
+						players[message.id].Shape.forceUpdatePos(message.xPos, message.yPos);
 						//Update all players of this change
 						multicastUpdatePlayers("updateVel", message);
 						break;
@@ -441,8 +423,6 @@ gameInterval = setInterval(function() {
 
 						var normalisedX = message.x - dlay*message.vx;
 						var normalisedY = message.y - dlay*message.vy;
-
-
 
 						globalBullets.push(new Bullet({
                 		shooter: message.shooter,
