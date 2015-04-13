@@ -567,7 +567,7 @@ function SsaClient() {
       
     initNetwork();
     initGUI();
-    
+
     setTimeout(function() {
       sendToServer({type:'newPlayer', shape:shape});
     }, 1000);
