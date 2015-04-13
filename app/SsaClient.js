@@ -367,13 +367,14 @@ function SsaClient() {
 
 playerBullets.forEach(function(bullet){ 
     if (bullet.isActive()) {
-      
+
               if (((bullet.x < shape.x + effectiveWidth)&&(bullet.x > shape.x - effectiveWidth))
                 &&((bullet.y < shape.y + effectiveHeight )&&(bullet.y > shape.y - effectiveHeight)))
                  {
                 bullet.kill();
-                console.log("Killing Bullet");
+                //console.log("Killing Bullet");
     
+
     }
   }
 
