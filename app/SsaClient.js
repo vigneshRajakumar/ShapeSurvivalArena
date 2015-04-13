@@ -37,7 +37,7 @@ function SsaClient() {
   }
 
   var sendToServer = function(msg) {
-    console.log("Triggering a "+msg.type+" update...\n");
+    //console.log("Triggering a "+msg.type+" update...\n");
     var date = new Date();
     var currentTime = date.getTime();
     msg["timestamp"] = currentTime;
@@ -139,7 +139,6 @@ function SsaClient() {
   }
 
   var initGUI = function() {
-
     while (document.readyState != "complete") {
       console.log("loading...");
     };
@@ -187,17 +186,7 @@ function SsaClient() {
   }
 
   var onMouseClick = function(e) {
-    //Shoot weapon
-
-    bullet = myShape.shoot();
-
-    //Send event to server
-    sendToServer({type:"Shoot",
-      shooter: bullet.shooter,
-      x: bullet.x,
-      y: bullet.y,
-      vx: bullet.vx,
-      vy: bullet.vy});
+    pewPew();
   }
 
   var onKeyPress = function(e) {
@@ -208,89 +197,74 @@ function SsaClient() {
     39: right arrow   68: D
     */
 
-    console.log("key = "+e.keyCode+"\n");
-
     switch (e.keyCode) {
-      case 87:
-        { // Up
-          if(upPressed == false) {
-            //Set vY to a positive value
-            myShape.move('U');
+      case 87: { // Up/W
+        if(upPressed == false) {
+          //Set vY to a positive value
+          myShape.move('U');
 
-            //console.log("VX = " + myShape.vx + ", VY = " + myShape.vy);
-            // Send event to server
-            sendToServer({type:"updateVel", id:myShape.serverId, xVel:myShape.vx, yVel:myShape.vy, xPos:myShape.x, yPos:myShape.y});
-            upPressed = true;
-          }
-          break;
-        }
-      case 83:
-        { // Down
-          if(downPressed == false) {
-            //Set vY to a negative value
-            myShape.move('D');
-
-            //console.log("VX = " + myShape.vx + ", VY = " + myShape.vy);
-            // Send event to server
-            sendToServer({type:"updateVel", id:myShape.serverId, xVel:myShape.vx, yVel:myShape.vy, xPos:myShape.x, yPos:myShape.y});
-            downPressed = true;
-          }
-          break;
-        }
-      case 65:
-      //case 37:
-        { // Left
-          if(leftPressed == false) {
-            //Set vX to a negative value cause left is -ve
-            myShape.move('L');
-
-            //console.log("VX = " + myShape.vx + ", VY = " + myShape.vy);
-            // Send event to server
-            sendToServer({type:"updateVel", id:myShape.serverId, xVel:myShape.vx, yVel:myShape.vy, xPos:myShape.x, yPos:myShape.y});
-            leftPressed = true;
-          }
-          break;
-        }
-      case 68:
-      //case 39:
-        { // Right
-          if(rightPressed == false) {
-            //Set vX to a positive value cause left is +ve
-            myShape.move('R');
-
-            //console.log("VX = " + myShape.vx + ", VY = " + myShape.vy);
-            // Send event to server
-            sendToServer({type:"updateVel", id:myShape.serverId, xVel:myShape.vx, yVel:myShape.vy, xPos:myShape.x, yPos:myShape.y});
-            rightPressed = true;
-          }
-          break;
-        }
-      case 38: { // Up
-          delay += 50;
+          //console.log("VX = " + myShape.vx + ", VY = " + myShape.vy);
           // Send event to server
-          sendToServer({type:"delay", delay:delay});
-          showMessage("delay", "Delay to Server: " + delay + " ms");
-          break;
+          sendToServer({type:"updateVel", id:myShape.serverId, xVel:myShape.vx, yVel:myShape.vy, xPos:myShape.x, yPos:myShape.y});
+          upPressed = true;
+        }
+        break;
+      }
+      case 83: { // Down/S
+        if(downPressed == false) {
+          //Set vY to a negative value
+          myShape.move('D');
+
+          //console.log("VX = " + myShape.vx + ", VY = " + myShape.vy);
+          // Send event to server
+          sendToServer({type:"updateVel", id:myShape.serverId, xVel:myShape.vx, yVel:myShape.vy, xPos:myShape.x, yPos:myShape.y});
+          downPressed = true;
+        }
+        break;
+      }
+      case 65: { // Left/A
+        if(leftPressed == false) {
+          //Set vX to a negative value cause left is -ve
+          myShape.move('L');
+
+          //console.log("VX = " + myShape.vx + ", VY = " + myShape.vy);
+          // Send event to server
+          sendToServer({type:"updateVel", id:myShape.serverId, xVel:myShape.vx, yVel:myShape.vy, xPos:myShape.x, yPos:myShape.y});
+          leftPressed = true;
+        }
+        break;
+      }
+      case 68: { // Right/D
+        if(rightPressed == false) {
+          //Set vX to a positive value cause left is +ve
+          myShape.move('R');
+
+          //console.log("VX = " + myShape.vx + ", VY = " + myShape.vy);
+          // Send event to server
+          sendToServer({type:"updateVel", id:myShape.serverId, xVel:myShape.vx, yVel:myShape.vy, xPos:myShape.x, yPos:myShape.y});
+          rightPressed = true;
+        }
+        break;
+      }
+      case 38: { // Up
+        delay += 50;
+        // Send event to server
+        sendToServer({type:"delay", delay:delay});
+        showMessage("delay", "Delay to Server: " + delay + " ms");
+        break;
       }
       case 40: { // Down
-          if (delay >= 50) {
-              delay -= 50;
-              // Send event to server
-              sendToServer({type:"delay", delay:delay});
-              showMessage("delay", "Delay to Server: " + delay + " ms");
-          }
-          break;
+        if (delay >= 50) {
+            delay -= 50;
+            // Send event to server
+            sendToServer({type:"delay", delay:delay});
+            showMessage("delay", "Delay to Server: " + delay + " ms");
+        }
+        break;
       }
-      case 32: {
-        bullet = myShape.shoot();
-
-        //Send event to server
-        sendToServer({type:"Shoot",
-          shooter: bullet.shooter,
-          x: bullet.x,
-          y: bullet.y,
-          vx: bullet.vx,
-          vy: bullet.vy});
+      case 32: { // Space bar
+        pewPew();
+        break;
       }
     }
   }
@@ -304,48 +278,52 @@ function SsaClient() {
     */
 
     switch (e.keyCode) {
-      case 87:
-     // case 38:
-        { // Stop moving up
-          //myShape.updateVelY(Ssa.MOVESPEED);
-          myShape.stop('U');
-          // Send event to server
-          sendToServer({type:"updateVel", id:myShape.serverId, xVel:myShape.vx, yVel:myShape.vy, xPos:myShape.x, yPos:myShape.y});
-          upPressed = false;
-          break;
-        }
-      case 83:
-   //   case 40:
-        { // Stop moving down
-          //myShape.updateVelY(Ssa.MOVESPEED*-1);
-          myShape.stop('D');
-          // Send event to server
-          sendToServer({type:"updateVel", id:myShape.serverId, xVel:myShape.vx, yVel:myShape.vy, xPos:myShape.x, yPos:myShape.y});
-          downPressed = false;
-          break;
-        }
-      case 65:
-      case 37:
-        { // Stop moving left
-          //myShape.updateVelX(Ssa.MOVESPEED*-1);
-          myShape.stop('R');
-          // Send event to server
-          sendToServer({type:"updateVel", id:myShape.serverId, xVel:myShape.vx, yVel:myShape.vy, xPos:myShape.x, yPos:myShape.y});
-          leftPressed = false;
-          break;
-        }
-      case 68:
-      case 39:
-        { // Stop moving right
-          //Set vX to a positive value cause left is +ve
-          //myShape.updateVelX(Ssa.MOVESPEED);
-          myShape.stop('L');
-          // Send event to server
-          sendToServer({type:"updateVel", id:myShape.serverId, xVel:myShape.vx, yVel:myShape.vy, xPos:myShape.x, yPos:myShape.y});
-          rightPressed = false;
-          break;
-        }
+      case 87: { // Stop moving up
+        //myShape.updateVelY(Ssa.MOVESPEED);
+        myShape.stop('U');
+        // Send event to server
+        sendToServer({type:"updateVel", id:myShape.serverId, xVel:myShape.vx, yVel:myShape.vy, xPos:myShape.x, yPos:myShape.y});
+        upPressed = false;
+        break;
+      }
+      case 83: { // Stop moving down
+        //myShape.updateVelY(Ssa.MOVESPEED*-1);
+        myShape.stop('D');
+        // Send event to server
+        sendToServer({type:"updateVel", id:myShape.serverId, xVel:myShape.vx, yVel:myShape.vy, xPos:myShape.x, yPos:myShape.y});
+        downPressed = false;
+        break;
+      }
+      case 65: { // Stop moving left
+        //myShape.updateVelX(Ssa.MOVESPEED*-1);
+        myShape.stop('R');
+        // Send event to server
+        sendToServer({type:"updateVel", id:myShape.serverId, xVel:myShape.vx, yVel:myShape.vy, xPos:myShape.x, yPos:myShape.y});
+        leftPressed = false;
+        break;
+      }
+      case 68: { // Stop moving right
+        //Set vX to a positive value cause left is +ve
+        //myShape.updateVelX(Ssa.MOVESPEED);
+        myShape.stop('L');
+        // Send event to server
+        sendToServer({type:"updateVel", id:myShape.serverId, xVel:myShape.vx, yVel:myShape.vy, xPos:myShape.x, yPos:myShape.y});
+        rightPressed = false;
+        break;
+      }
     }
+  }
+
+  var pewPew = function() {
+    bullet = myShape.shoot();
+
+    //Send event to server
+    sendToServer({type:"Shoot",
+      shooter: bullet.shooter,
+      x: bullet.x,
+      y: bullet.y,
+      vx: bullet.vx,
+      vy: bullet.vy});
   }
 
   var gameLoop = function() {
@@ -367,7 +345,6 @@ function SsaClient() {
 
 
   var manageCollisions = function(playerBullets, shape) {
-
     var effectiveHeight = 0;
     var effectiveWidth = 0;
 
@@ -448,8 +425,15 @@ function SsaClient() {
       context.fill();
     } else if (shape.type == "square") {
       //Starting from top left-hand corner      
-      context.fillRect(shape.x, shape.y,
-        Ssa.SQUARE_LENGTH, Ssa.SQUARE_LENGTH);
+      //context.fillRect(shape.x, shape.y, Ssa.SQUARE_LENGTH, Ssa.SQUARE_LENGTH);
+
+      context.beginPath();
+      context.moveTo(shape.x, shape.y);
+      context.lineTo(shape.x + Ssa.SQUARE_LENGTH, shape.y);
+      context.lineTo(shape.x + Ssa.SQUARE_LENGTH, shape.y - Ssa.SQUARE_LENGTH);
+      context.lineTo(shape.x, shape.y - Ssa.SQUARE_LENGTH);
+      context.lineTo(shape.x, shape.y);
+      context.fill();
     } else if (shape.type == "triangle") {
       //Imagine an upright triangle in a square with the base
       //of the triangle as the bottom edge of the square

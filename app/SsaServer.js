@@ -141,7 +141,6 @@ function SsaServer() {
 			        if (((bullet.x < shape.x + effectiveWidth)&&(bullet.x > shape.x - effectiveWidth))
 			        	&&((bullet.y < shape.y + effectiveHeight )&&(bullet.y > shape.y - effectiveHeight)))
 			           {
-			           	// Suggest removing this s.t. the bullet continues on (ie pierces targets)
 				        bullet.kill();
 				        //console.log("Sending Hit Msg!");
 
@@ -321,7 +320,6 @@ var renderBullets = function() {
 				});
 
 				conn.on("close", function() {
-
 					reset();
 
 					count--;
@@ -354,7 +352,9 @@ var renderBullets = function() {
 						startGame();
 						break;
 					case "newPlayer":
-						if (count > 4) {
+						if(count > 4) {
+							return;
+						} else if (count == 4) {
 							// Send back message that game is full
 							unicast(conn, {
 								type: "message",
@@ -441,19 +441,15 @@ var renderBullets = function() {
 			app.engine('html', ejs.renderFile);
 			//handler
 			var shape;
-			var userName;
 			app.post('/user', function(sReq, sRes) {
 				shape = sReq.body.shape;
-				userName = sReq.body.username;
 				console.log(shape);
 				sRes.redirect('/play');
 			});
 			app.get('/play', function(req, res) {
 				console.log(shape);
-				console.log(userName);
 			    res.render('ssa.html', {
-			        shape: shape,
-			        user: userName
+			        shape: shape
 		    	});
 			});
 			console.log("Server running on http://0.0.0.0:" + Ssa.PORT + "\n")

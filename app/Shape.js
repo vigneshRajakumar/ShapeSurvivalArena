@@ -144,17 +144,12 @@ function Shape(xPos,yPos,t) {
     return bulletList;
   }
 
-  this.deleteInactiveBullets = function()
-  {
-    for(i = 0; i < bulletList.length; i++)
-    {
+  this.deleteInactiveBullets = function() {
+    for(i = 0; i < bulletList.length; i++) {
       if(bulletList[i]&&!bulletList[i].isActive()){
         delete bulletList[i];
       }
-
     }
-
-
   }
 
   this.addBullet = function(bullet)
@@ -168,7 +163,7 @@ function Shape(xPos,yPos,t) {
     //Start positon of bullet
 
     var bulletX = that.x + that.width/2;
-    var bulletY = that.y + that.height/2;
+    var bulletY = that.y - that.height/2;
 
     //Bullet speed is 2 times speed of player
     var bulletVX = Ssa.BULLET_SPEED_MUL*that.vx;

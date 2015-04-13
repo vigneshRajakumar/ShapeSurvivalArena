@@ -2,10 +2,6 @@
 "use strict"
 
 function Bullet(B) {
-
-  var BULLET_RADIUS = 1 //Circle Radius divided by scale 10
-  
-
   //public variables
   this.x;
   this.y;
@@ -48,9 +44,9 @@ function Bullet(B) {
   };
 
   this.draw = function(context) {
-	context.fillStyle = "#ffff00";
+  	context.fillStyle = "#ffff00";
     context.beginPath();
-    context.arc(that.x, that.y, BULLET_RADIUS, 0, Math.PI * 2, true);
+    context.arc(that.x, that.y, Ssa.BULLET_RADIUS, 0, Math.PI * 2, true);
     context.closePath();
     context.fill();
   };

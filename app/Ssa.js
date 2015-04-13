@@ -3,7 +3,7 @@ var Ssa = {
 	WIDTH : 800, 				//width of the play area
 	PORT : 5000, 				//server port
 	FRAME_RATE : 25,			//game frame rate
-	SERVER_NAME : "172.23.47.90",	//server name for testing
+	SERVER_NAME : "172.16.1.81",	//server name for testing
 
 	BG_COLOR : "#000000",//"#525252",
 
@@ -55,7 +55,7 @@ var Ssa = {
   	TRIANGLE_HEIGHT : 20,
   	TRIANGLE_LENGTH : 20,
 
-  	BULLET_RADIUS : 5,
+  	BULLET_RADIUS : 3,
   	BULLET_SPEED_MUL : 3
 }
 
