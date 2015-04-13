@@ -3,7 +3,7 @@ var Ssa = {
 	WIDTH : 800, 				//width of the play area
 	PORT : 5000, 				//server port
 	FRAME_RATE : 25,			//game frame rate
-	SERVER_NAME : "172.16.1.81",	//server name for testing
+	SERVER_NAME : "localhost",	//server name for testing
 
 	BG_COLOR : "#000000",//"#525252",
 

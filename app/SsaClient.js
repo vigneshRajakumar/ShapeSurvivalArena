@@ -335,7 +335,7 @@ function SsaClient() {
       var i;
       for (i in oppShape) {
         oppShape[i].updatePos();
-        manageCollisions(playerBullets, oppShape[i]);
+        managedCollisions(playerBullets, oppShape[i]);
       }
 
       render();
@@ -343,8 +343,8 @@ function SsaClient() {
   }
 
 
+  var managedCollisions = function(playerBullets, shape) {
 
-  var manageCollisions = function(playerBullets, shape) {
     var effectiveHeight = 0;
     var effectiveWidth = 0;
 
@@ -363,23 +363,29 @@ function SsaClient() {
     }
 
     // Recangular Collison Detection Algorithm
-    playerBullets.forEach(function(bullet) {
-      if (bullet.isActive()) {
-        var xref = bullet.getX();
-        var yref = bullet.getY();
-        var BULLET_RADIUS = Ssa.BULLET_RADIUS;
 
-        if (xref.x < shape.x + effectiveWidth &&
-          xref.x + bullet.BULLET_RADIUS > shape.x &&
-          xref.y < shape.y + effectiveHeight &&
-          xref.y + xref.height > shape.y) {
 
-          bullet.kill();
-          shape.isHit(myShape);
-        }
-      }
-    });
+playerBullets.forEach(function(bullet){ 
+    if (bullet.isActive()) {
+      
+              if (((bullet.x < shape.x + effectiveWidth)&&(bullet.x > shape.x - effectiveWidth))
+                &&((bullet.y < shape.y + effectiveHeight )&&(bullet.y > shape.y - effectiveHeight)))
+                 {
+                bullet.kill();
+                console.log("Killing Bullet");
+    
+    }
   }
+
+});
+
+}
+
+
+
+  
+
+
 
   var render = function() {
     var context = playArea.getContext("2d");
