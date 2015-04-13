@@ -208,6 +208,8 @@ function SsaClient() {
     39: right arrow   68: D
     */
 
+    console.log("key = "+e.keyCode+"\n");
+
     switch (e.keyCode) {
       case 87:
         { // Up
@@ -278,6 +280,17 @@ function SsaClient() {
               showMessage("delay", "Delay to Server: " + delay + " ms");
           }
           break;
+      }
+      case 32: {
+        bullet = myShape.shoot();
+
+        //Send event to server
+        sendToServer({type:"Shoot",
+          shooter: bullet.shooter,
+          x: bullet.x,
+          y: bullet.y,
+          vx: bullet.vx,
+          vy: bullet.vy});
       }
     }
   }
@@ -548,8 +561,7 @@ function SsaClient() {
   }
 
   
-  this.start = function() {
-	  
+  this.start = function() {  
 	// Start off with no delay to the server
     delay = 0;
       

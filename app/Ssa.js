@@ -3,7 +3,7 @@ var Ssa = {
 	WIDTH : 800, 				//width of the play area
 	PORT : 5000, 				//server port
 	FRAME_RATE : 25,			//game frame rate
-	SERVER_NAME : "localhost",	//server name for testing
+	SERVER_NAME : "172.23.47.90",	//server name for testing
 
 	BG_COLOR : "#000000",//"#525252",
 
@@ -42,20 +42,20 @@ var Ssa = {
   	CIRCLE_HP : 5,
   	CIRCLE_VMULTIPLIER : 1.3,
   	CIRCLE_STRENGTH : 1,
-  	CIRCLE_RADIUS : 7,
+  	CIRCLE_RADIUS : 10,
   
   	SQUARE_HP : 3,
   	SQUARE_VMULTIPLIER : 1.6,
   	SQUARE_STRENGTH : 1,
-  	SQUARE_LENGTH : 14,
+  	SQUARE_LENGTH : 20,
   
   	TRIANGLE_HP : 3,
   	TRIANGLE_VMULTIPLIER : 1.3,
   	TRIANGLE_STRENGTH : 2,
-  	TRIANGLE_HEIGHT : 14,
-  	TRIANGLE_LENGTH : 14,
+  	TRIANGLE_HEIGHT : 20,
+  	TRIANGLE_LENGTH : 20,
 
-  	BULLET_RADIUS : 3,
+  	BULLET_RADIUS : 5,
   	BULLET_SPEED_MUL : 3
 }
 

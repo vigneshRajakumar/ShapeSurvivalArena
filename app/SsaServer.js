@@ -354,7 +354,7 @@ var renderBullets = function() {
 						startGame();
 						break;
 					case "newPlayer":
-						if (count == 4) {
+						if (count > 4) {
 							// Send back message that game is full
 							unicast(conn, {
 								type: "message",
