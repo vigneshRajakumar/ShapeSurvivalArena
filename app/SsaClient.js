@@ -19,6 +19,7 @@ function SsaClient() {
 
 
   var delay;          // delay simulated on current client 
+  var locallag = 0;
   
   var upPressed = false;
   var downPressed = false;
@@ -201,7 +202,7 @@ function SsaClient() {
       case 87: { // Up/W
         if(upPressed == false) {
           //Set vY to a positive value
-          myShape.move('U');
+        	setTimeout(myShape.move('U'),locallag);
 
           //console.log("VX = " + myShape.vx + ", VY = " + myShape.vy);
           // Send event to server
@@ -213,7 +214,7 @@ function SsaClient() {
       case 83: { // Down/S
         if(downPressed == false) {
           //Set vY to a negative value
-          myShape.move('D');
+          setTimeout(myShape.move('D'),locallag);
 
           //console.log("VX = " + myShape.vx + ", VY = " + myShape.vy);
           // Send event to server
@@ -225,7 +226,7 @@ function SsaClient() {
       case 65: { // Left/A
         if(leftPressed == false) {
           //Set vX to a negative value cause left is -ve
-          myShape.move('L');
+          setTimeout(myShape.move('L'),locallag);
 
           //console.log("VX = " + myShape.vx + ", VY = " + myShape.vy);
           // Send event to server
@@ -237,7 +238,7 @@ function SsaClient() {
       case 68: { // Right/D
         if(rightPressed == false) {
           //Set vX to a positive value cause left is +ve
-          myShape.move('R');
+          setTimeout(myShape.move('R'),locallag);
 
           //console.log("VX = " + myShape.vx + ", VY = " + myShape.vy);
           // Send event to server
@@ -280,7 +281,7 @@ function SsaClient() {
     switch (e.keyCode) {
       case 87: { // Stop moving up
         //myShape.updateVelY(Ssa.MOVESPEED);
-        myShape.stop('U');
+    	  setTimeout(myShape.stop('U'),locallag);
         // Send event to server
         sendToServer({type:"updateVel", id:myShape.serverId, xVel:myShape.vx, yVel:myShape.vy, xPos:myShape.x, yPos:myShape.y});
         upPressed = false;
@@ -288,7 +289,7 @@ function SsaClient() {
       }
       case 83: { // Stop moving down
         //myShape.updateVelY(Ssa.MOVESPEED*-1);
-        myShape.stop('D');
+    	  setTimeout(myShape.stop('D'),locallag);
         // Send event to server
         sendToServer({type:"updateVel", id:myShape.serverId, xVel:myShape.vx, yVel:myShape.vy, xPos:myShape.x, yPos:myShape.y});
         downPressed = false;
@@ -296,7 +297,7 @@ function SsaClient() {
       }
       case 65: { // Stop moving left
         //myShape.updateVelX(Ssa.MOVESPEED*-1);
-        myShape.stop('R');
+        setTimeout(myShape.stop('R'),locallag);
         // Send event to server
         sendToServer({type:"updateVel", id:myShape.serverId, xVel:myShape.vx, yVel:myShape.vy, xPos:myShape.x, yPos:myShape.y});
         leftPressed = false;
@@ -305,7 +306,7 @@ function SsaClient() {
       case 68: { // Stop moving right
         //Set vX to a positive value cause left is +ve
         //myShape.updateVelX(Ssa.MOVESPEED);
-        myShape.stop('L');
+    	  setTimeout(myShape.stop('L'),locallag);
         // Send event to server
         sendToServer({type:"updateVel", id:myShape.serverId, xVel:myShape.vx, yVel:myShape.vy, xPos:myShape.x, yPos:myShape.y});
         rightPressed = false;
@@ -327,6 +328,14 @@ function SsaClient() {
   }
 
   var gameLoop = function() {
+	  
+	  if(delay <= 100 ){
+		  locallag = delay;
+	  }else{
+		  locallag = 100;
+	  }
+	  
+	  
     if(myShape!=undefined) {
       myShape.updatePos();
       myShape.deleteInactiveBullets();
