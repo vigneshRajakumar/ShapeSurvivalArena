@@ -88,13 +88,21 @@ function SsaClient() {
           //console.log(myShape.pid);
             if(message.shooter!=myShape.pid) {
 
-              myShape.addBullet(new Bullet({
+              var new_bullet = new Bullet({
                 shooter: message.shooter,
                 x: message.x,
                 y: message.y,
                 vx: message.vx,
                 vy: message.vy
-              }))
+              })
+
+              //if Shooter is not MyShape, we assume bullet is moving towards us and apply LPF
+
+              new_bullet.LPF(myShape,delay,locallag);
+
+              myShape.addBullet(new_bullet);
+
+             
             }
             break;}
           case "Hit":{ //Update a specific player's velocity

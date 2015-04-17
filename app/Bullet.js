@@ -26,6 +26,17 @@ function Bullet(B) {
     return that.active;
   };
 
+  this.LPF = function(myShape,delay,locallag)
+  {
+    var euclidean_distance = Math.sqrt(Math.pow((myShape.x - this.x),2) + Math.pow((myShape.y- this.y),2));
+    var normal_time = euclidean_distance/Math.sqrt(Math.pow(this.vx,2) + Math.pow(this.vy,2));
+    var LPF_time = normal_time  - 2*delay + locallag;
+    this.vy = this.vy*(normal_time/LPF_time);
+    this.vx = this.vx*(normal_time/LPF_time);
+
+  }
+
+
   this.getX = function() {
     return that.x;
   };
