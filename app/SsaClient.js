@@ -80,6 +80,8 @@ function SsaClient() {
             break;
           case "Shoot":
           { //Update a specific player's velocity
+
+            console.log("Recieved Bullet!");
             if(message.shooter!=myShape.pid) {
 
               var new_bullet = new Bullet({
@@ -165,6 +167,8 @@ function SsaClient() {
     }, false); //For player shooting
 
     //Mobile Controls
+
+    /*
     playArea.addEventListener("touchmove", function(e) {
       onTouchMove(e);
     }, false); //For player shooting
@@ -176,7 +180,7 @@ function SsaClient() {
     }, false);
     window.ondevicemotion = function(e) {
       onDeviceMotion(e);
-    }
+    }*/
     /////////////////////////////
     //  End of event handlers  //
     /////////////////////////////    
@@ -386,10 +390,11 @@ function SsaClient() {
     // Recangular Collison Detection Algorithm
     playerBullets.forEach(function(bullet){ 
       if (bullet.isActive()) {
+        if(bullet.shooter!= shape.pid){
         if (((bullet.x < shape.x + effectiveWidth)&&(bullet.x > shape.x - effectiveWidth))
           &&((bullet.y < shape.y + effectiveHeight )&&(bullet.y > shape.y - effectiveHeight))) {
           bullet.kill();
-          //console.log("Killing Bullet");
+          console.log("Killing Bullet");}
         } 
       }
     });
