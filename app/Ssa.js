@@ -4,7 +4,7 @@ var Ssa = {
 	PORT : 5000, 				//server port
 	FRAME_RATE : 25,			//game frame rate
 	//SERVER_NAME : "localhost",	//server name for testing
-	SERVER_NAME : "localhost",	//server name for hosting
+	SERVER_NAME : "192.168.0.110",	//server name for hosting
 
 	BG_COLOR : "#000000",//"#525252",
 

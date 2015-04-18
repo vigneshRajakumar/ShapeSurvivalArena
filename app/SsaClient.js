@@ -171,16 +171,34 @@ function SsaClient() {
     /*
     playArea.addEventListener("touchmove", function(e) {
       onTouchMove(e);
-    }, false); //For player shooting
+    }, false); //For player shooting*/
     playArea.addEventListener("touchend", function(e) {
       onTouchEnd(e);
     }, false); //For playing shooting
-    window.addEventListener("devicemotion", function(e) {
-      onDeviceMotion(e);
-    }, false);
-    window.ondevicemotion = function(e) {
-      onDeviceMotion(e);
-    }*/
+    
+    if(window.DeviceOrientationEvent){
+    	window.addEventListener("deviceorientation", function(e) {
+    		var alpha = event.alpha;
+    		var beta = event.beta;
+    		var gamma = event.gamma;
+    		
+    		if(beta < -5 ){
+    			myShape.move('U');
+    		}else if(beta > 5 )
+    			myShape.move('D');
+    		else if(gamma < -5 )
+    			myShape.move('L');
+    		else if( gamma > 5)
+    			myShape.move('R');
+    		else{
+    			myShape.stop('U');
+    			myShape.stop('D');
+    			myShape.stop('L');
+    			myShape.stop('R');
+    		}
+    		
+    	},false);
+    }
     /////////////////////////////
     //  End of event handlers  //
     /////////////////////////////    
