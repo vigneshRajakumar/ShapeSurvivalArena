@@ -182,11 +182,11 @@ function SsaClient() {
     		var beta = event.beta;
     		var gamma = event.gamma;
     		
-    		if(beta < -3 ){
+    		if(beta < 2 ){
     			myShape.move('U');
     			 // Send event to server
     	          sendToServer({type:"updateVel", id:myShape.serverId, xVel:myShape.vx, yVel:myShape.vy, xPos:myShape.x, yPos:myShape.y});
-    		}else if(beta > 10 ){
+    		}else if(beta > 15 ){
     			myShape.move('D');
     			 // Send event to server
     	          sendToServer({type:"updateVel", id:myShape.serverId, xVel:myShape.vx, yVel:myShape.vy, xPos:myShape.x, yPos:myShape.y});
