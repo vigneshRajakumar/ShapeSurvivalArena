@@ -182,19 +182,38 @@ function SsaClient() {
     		var beta = event.beta;
     		var gamma = event.gamma;
     		
-    		if(beta < -5 ){
+    		if(beta < -3 ){
     			myShape.move('U');
-    		}else if(beta > 5 )
+    			 // Send event to server
+    	          sendToServer({type:"updateVel", id:myShape.serverId, xVel:myShape.vx, yVel:myShape.vy, xPos:myShape.x, yPos:myShape.y});
+    		}else if(beta > 10 ){
     			myShape.move('D');
-    		else if(gamma < -5 )
-    			myShape.move('L');
-    		else if( gamma > 5)
-    			myShape.move('R');
+    			 // Send event to server
+    	          sendToServer({type:"updateVel", id:myShape.serverId, xVel:myShape.vx, yVel:myShape.vy, xPos:myShape.x, yPos:myShape.y});
+    		}
     		else{
     			myShape.stop('U');
     			myShape.stop('D');
+    			 // Send event to server
+    	          sendToServer({type:"updateVel", id:myShape.serverId, xVel:myShape.vx, yVel:myShape.vy, xPos:myShape.x, yPos:myShape.y});
+    		}
+    		
+    		if(gamma < -5 ){
+    			myShape.move('L');
+    			 // Send event to server
+    	          sendToServer({type:"updateVel", id:myShape.serverId, xVel:myShape.vx, yVel:myShape.vy, xPos:myShape.x, yPos:myShape.y});
+    		}
+    		else if( gamma > 5){
+    			myShape.move('R');
+    			 // Send event to server
+    	          sendToServer({type:"updateVel", id:myShape.serverId, xVel:myShape.vx, yVel:myShape.vy, xPos:myShape.x, yPos:myShape.y});
+    		}
+    		else{
+    			
     			myShape.stop('L');
     			myShape.stop('R');
+    			 // Send event to server
+    	          sendToServer({type:"updateVel", id:myShape.serverId, xVel:myShape.vx, yVel:myShape.vy, xPos:myShape.x, yPos:myShape.y});
     		}
     		
     	},false);
