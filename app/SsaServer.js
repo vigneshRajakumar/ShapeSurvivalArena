@@ -36,6 +36,7 @@ function SsaServer() {
 		sock.write(JSON.stringify(msg));
 	}
 
+	/*Deprecated function
 	var reset = function(msg) {
 
 		if (gameInterval !== undefined) {
@@ -43,7 +44,7 @@ function SsaServer() {
 			gameInterval = undefined;
 		}
 		//TODO
-	}
+	}*/
 
 	var getSizeOf = function(array) {
 		var size = 0;
@@ -204,6 +205,7 @@ var renderBullets = function() {
 		
 	}
 
+	/* Deprecated function
 	var startGame = function() {
 		gameInterval = setInterval(function() {
 			gameLoop();
@@ -219,11 +221,11 @@ var renderBullets = function() {
 			console.log("Not enough players!");
 			//broadcast({type:"message", content:"Not enough player"});
 		} else {
-			/*gameInterval = setInterval(function() {
+			gameInterval = setInterval(function() {
 				gameLoop();
-			}, 1000);*/
+			}, 1000);
 		}
-	}
+	}*/
 
 	var multicastUpdatePlayers  = function(msgType, msgOptions) {
 		var id;
@@ -261,8 +263,9 @@ var renderBullets = function() {
 				//Update the velocity of a specific player
 				unicast(sockets[sockid], generateMsg(msgType, msgOptions));
 			}
+		}
 	}
-}
+	
 	var generateMsg = function(msgType, msgOptions) {
 		var msg;
 
@@ -295,6 +298,10 @@ var renderBullets = function() {
 		return msg;
 	}
 
+	var findNextPid = function() {
+
+	}
+
 	this.start = function() {
 		try {
 			var express = require("express");
@@ -314,24 +321,26 @@ var renderBullets = function() {
 
 			sock.on("connection", function(conn) {
 				console.log("connected");
+				console.log("There are "+(count+1)+" open connections");
+
 				broadcast({
 					type: "message",
 					content: "There is now " + count + " players"
 				});
 
 				conn.on("close", function() {
-					reset();
+					console.log("A connection closed. There are "+(count-1)+" open connections");
+					if(players[conn.id] != undefined) {
+						count--;
+						nextPID = players[conn.id].pid;
 
-					count--;
+						if (players[conn.id] === p1) p1 = undefined;
+						if (players[conn.id] === p2) p2 = undefined;
+						if (players[conn.id] === p3) p3 = undefined;
+						if (players[conn.id] === p4) p4 = undefined;
 
-					if(players[conn.id] != undefined) nextPID = players[conn.id].pid;
-
-					if (players[conn.id] === p1) p1 = undefined;
-					if (players[conn.id] === p2) p2 = undefined;
-					if (players[conn.id] === p3) p3 = undefined;
-					if (players[conn.id] === p4) p4 = undefined;
-
-					delete players[conn.id];
+						delete players[conn.id];
+					} 
 
 					broadcast({
 						type: "message",
@@ -345,28 +354,21 @@ var renderBullets = function() {
 
 				conn.on("data", function(data) {
 					var message = JSON.parse(data);
-					var p = players[conn.id];
 					 
 					switch (message.type) {
-					case "start":
+					/*case "start": // Deprecated function
 						startGame();
-						break;
+						break;*/
 					case "newPlayer":
-						if(count > 4) {
-							return;
-						} else if (count == 4) {
-							// Send back message that game is full
-							unicast(conn, {
-								type: "message",
-								content: "The game is full.  Come back later"
-							});
-							// TODO: force a disconnect
-						} else {
+						if(count < 4) { // If we can still accept a 4th player
+							var p = players[conn.id];
+
 							//New player joins
 							//Give him the status of all players
 							//Update server copy of state
 							//Update everyone else of this person joining
 							var currPID = nextPID;
+
 							newPlayer(conn, message.shape);
 							console.log(players[conn.id]);
 							unicast(conn, {

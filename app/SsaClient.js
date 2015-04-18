@@ -14,9 +14,7 @@ function SsaClient() {
   var playArea;
 
   var myShape;
-  //var myId;
   var oppShape = new Object();
-
 
   var delay;          // delay simulated on current client 
   var locallag = 0;
@@ -57,7 +55,6 @@ function SsaClient() {
             break;
           case "you":
             myShape = new Shape(message.xPos, message.yPos, message.shape);
-            //myId = message.id;
             myShape.serverId = message.id;
             myShape.pid = message.pid;
             myShape.initShape();
@@ -83,9 +80,6 @@ function SsaClient() {
             break;
           case "Shoot":
           { //Update a specific player's velocity
-          //console.log("Recieved UpdateBullet!");
-          //console.log(message.shooter);
-          //console.log(myShape.pid);
             if(message.shooter!=myShape.pid) {
 
               var new_bullet = new Bullet({
@@ -99,10 +93,7 @@ function SsaClient() {
               //if Shooter is not MyShape, we assume bullet is moving towards us and apply LPF
 
               new_bullet.LPF(myShape,delay,locallag);
-
               myShape.addBullet(new_bullet);
-
-             
             }
             break;}
           case "Hit":{ //Update a specific player's velocity
@@ -172,8 +163,20 @@ function SsaClient() {
     playArea.addEventListener("click", function(e) {
       onMouseClick(e);
     }, false); //For player shooting
-    //Mobile Controls
 
+    //Mobile Controls
+    playArea.addEventListener("touchmove", function(e) {
+      onTouchMove(e);
+    }, false); //For player shooting
+    playArea.addEventListener("touchend", function(e) {
+      onTouchEnd(e);
+    }, false); //For playing shooting
+    window.addEventListener("devicemotion", function(e) {
+      onDeviceMotion(e);
+    }, false);
+    window.ondevicemotion = function(e) {
+      onDeviceMotion(e);
+    }
     /////////////////////////////
     //  End of event handlers  //
     /////////////////////////////    
@@ -323,6 +326,11 @@ function SsaClient() {
     }
   }
 
+  // Touch version of "mouse click" callback above.
+  var onTouchEnd = function(e) {
+    pewPew();
+  }
+
   var pewPew = function() {
     bullet = myShape.shoot();
 
@@ -361,47 +369,32 @@ function SsaClient() {
 
 
   var managedCollisions = function(playerBullets, shape) {
-
     var effectiveHeight = 0;
     var effectiveWidth = 0;
 
     if (shape.type == "circle") {
       effectiveHeight = Ssa.CIRCLE_RADIUS;
       effectiveWidth = Ssa.CIRCLE_RADIUS;
-
     } else if (shape.type == "square") {
-
       effectiveHeight = Ssa.SQUARE_LENGTH;
       effectiveWidth = Ssa.SQUARE_LENGTH;
     } else {
-
       effectiveHeight = Ssa.TRIANGLE_HEIGHT;
       effectiveWidth = Ssa.TRIANGLE_LENGTH;
     }
 
     // Recangular Collison Detection Algorithm
-
-
-playerBullets.forEach(function(bullet){ 
-    if (bullet.isActive()) {
-
-              if (((bullet.x < shape.x + effectiveWidth)&&(bullet.x > shape.x - effectiveWidth))
-                &&((bullet.y < shape.y + effectiveHeight )&&(bullet.y > shape.y - effectiveHeight)))
-                 {
-                bullet.kill();
-                //console.log("Killing Bullet");
-    
-
-    }
+    playerBullets.forEach(function(bullet){ 
+      if (bullet.isActive()) {
+        if (((bullet.x < shape.x + effectiveWidth)&&(bullet.x > shape.x - effectiveWidth))
+          &&((bullet.y < shape.y + effectiveHeight )&&(bullet.y > shape.y - effectiveHeight))) {
+          bullet.kill();
+          //console.log("Killing Bullet");
+        } 
+      }
+    });
   }
 
-});
-
-}
-
-
-
-  
 
 
 
@@ -466,7 +459,6 @@ playerBullets.forEach(function(bullet){
       //the bottom left-hand corner to begin drawing.
       //Then we draw a line to the top of the triangle
       //Then we draw a line back down to the bottom of the triangle
-
       var triangleStartX = shape.x;
       var triangleStartY = shape.y - Ssa.TRIANGLE_HEIGHT;
 
