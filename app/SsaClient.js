@@ -395,9 +395,6 @@ function SsaClient() {
     });
   }
 
-
-
-
   var render = function() {
     var context = playArea.getContext("2d");
     // Reset playArea border
@@ -429,7 +426,8 @@ function SsaClient() {
 
   //Expects a shape object and a string
   var renderShape = function(shape, context) {
-    context.fillStyle = shape.shapeColor;
+    if(shape.isAlive()) context.fillStyle = shape.shapeColor;
+    else context.fillStyle = Ssa.INVUL_COLOR; //If shape is dead, render it as invulnerable
 
     if (shape.type == "circle") {
       //Circle center should be in corner of bottom-right quadrant
@@ -557,7 +555,7 @@ function SsaClient() {
         bullet.update();
         bullet.draw(context);
       }
-    })
+    });
   }
 
   

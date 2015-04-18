@@ -91,7 +91,7 @@ function Shape(xPos,yPos,t) {
 
     // If this hit kills this shape, reset its health
     if(!(that.isAlive())) {
-      that.shapeColor = Ssa.INVUL_COLOR;
+      // that.shapeColor = Ssa.INVUL_COLOR;
       // Create another thread that resets the health of the shape after 3s
       setTimeout(that.resetHealth, 3000);
 
